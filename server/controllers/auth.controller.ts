@@ -4,17 +4,27 @@ import jwt from 'jsonwebtoken'
 import { prisma } from '../prisma/client.js'
 
 function generateTokens(user: { id: string; role: string; email?: string | null; tokenVersion?: number }) {
+  const tv = user.tokenVersion ?? 0
   const access = jwt.sign(
-    { id: user.id, role: user.role, email: user.email ?? '', tv: user.tokenVersion ?? 0 },
+    { id: user.id, role: user.role, email: user.email ?? '', tv },
     process.env.JWT_SECRET!,
     { expiresIn: '15m' }
   )
+  // tv included in refresh token so force-logout invalidates refresh tokens too
   const refresh = jwt.sign(
-    { id: user.id },
+    { id: user.id, tv },
     process.env.JWT_REFRESH_SECRET!,
     { expiresIn: '7d' }
   )
   return { access, refresh }
+}
+
+function validatePassword(password: string): string | null {
+  if (password.length < 8) return 'Password must be at least 8 characters'
+  if (password.length > 128) return 'Password too long (max 128 characters)'
+  if (!/[0-9!@#$%^&*()\-_=+\[\]{};':"\\|,.<>/?`~]/.test(password))
+    return 'Password must contain at least one number or special character'
+  return null
 }
 
 export async function register(req: Request, res: Response) {
@@ -23,10 +33,22 @@ export async function register(req: Request, res: Response) {
     res.status(400).json({ error: 'All fields are required' })
     return
   }
-  if (!['TEACHER', 'STUDENT', 'ADMIN'].includes(role)) {
-    res.status(400).json({ error: 'Role must be TEACHER, STUDENT, or ADMIN' })
+  // Self-registration is only allowed for TEACHER and STUDENT
+  if (!['TEACHER', 'STUDENT'].includes(role)) {
+    res.status(400).json({ error: 'Role must be TEACHER or STUDENT' })
     return
   }
+  if (typeof name !== 'string' || name.trim().length === 0 || name.length > 100) {
+    res.status(400).json({ error: 'Name must be between 1 and 100 characters' })
+    return
+  }
+  if (typeof email !== 'string' || email.length > 255) {
+    res.status(400).json({ error: 'Invalid email' })
+    return
+  }
+  const pwError = validatePassword(password)
+  if (pwError) { res.status(400).json({ error: pwError }); return }
+
   const existing = await prisma.user.findUnique({ where: { email } })
   if (existing) {
     res.status(409).json({ error: 'Email already in use' })
@@ -34,7 +56,7 @@ export async function register(req: Request, res: Response) {
   }
   const passwordHash = await bcrypt.hash(password, 12)
   const user = await prisma.user.create({
-    data: { email, passwordHash, name, role },
+    data: { email: email.toLowerCase().trim(), passwordHash, name: name.trim(), role },
   })
   const tokens = generateTokens(user)
   res.status(201).json({
@@ -96,10 +118,15 @@ export async function refresh(req: Request, res: Response) {
     return
   }
   try {
-    const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!) as { id: string }
+    const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!) as { id: string; tv?: number }
     const user = await prisma.user.findUnique({ where: { id: payload.id } })
     if (!user) {
       res.status(401).json({ error: 'User not found' })
+      return
+    }
+    // If token carries tv, verify it matches current tokenVersion (honours force-logout)
+    if (payload.tv !== undefined && payload.tv !== user.tokenVersion) {
+      res.status(401).json({ error: 'Session expired' })
       return
     }
     const tokens = generateTokens(user)

@@ -42,9 +42,20 @@ export default function Analytics({ classroomId: propId }: { classroomId?: strin
     setLoadingAnswer(false)
   }
 
-  function exportCSV() {
+  async function exportCSV() {
+    const token = localStorage.getItem('access_token')
     const base = (import.meta.env.VITE_API_URL ?? 'http://localhost:4000') as string
-    window.open(`${base}/api/export/classroom/${classroomId}/csv?token=${localStorage.getItem('access_token')}`, '_blank')
+    const res = await fetch(`${base}/api/export/classroom/${classroomId}/csv`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (!res.ok) return
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `classroom-${classroomId}-grades.csv`
+    a.click()
+    URL.revokeObjectURL(url)
   }
 
   if (!data) return <div className="py-16 text-center text-gray-400">Loading analytics…</div>
