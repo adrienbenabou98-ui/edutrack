@@ -156,7 +156,6 @@ export default function Users() {
   const totalUsers = totals.reduce((s, t) => s + t._count.id, 0)
   const teacherCount = totals.find(t => t.role === 'TEACHER')?._count.id ?? 0
   const studentCount = totals.find(t => t.role === 'STUDENT')?._count.id ?? 0
-  const adminCount   = totals.find(t => t.role === 'ADMIN')?._count.id ?? 0
 
   return (
     <AdminLayout>

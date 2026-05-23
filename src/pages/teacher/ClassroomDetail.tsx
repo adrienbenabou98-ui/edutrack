@@ -62,8 +62,6 @@ export default function ClassroomDetail() {
   if (!classroom) return <div className="min-h-screen flex items-center justify-center text-gray-400">Loading…</div>
 
   const students = classroom.enrollments.map(e => e.student)
-  const isLowerSchool = (classroom.yearLevel ?? 0) >= 1 && (classroom.yearLevel ?? 0) <= 6
-
   const TAB_LABELS: [Tab, string][] = [
     ['assignments', `Assignments (${classroom.assignments.length})`],
     ['students', `Students (${classroom.enrollments.length})`],

@@ -45,7 +45,6 @@ export default function Security() {
   const [actions, setActions] = useState<string[]>([])
   const [actionFilter, setActionFilter] = useState('')
   const [loading, setLoading] = useState(true)
-  const [userSearch, setUserSearch] = useState('')
   const [historyUserId, setHistoryUserId] = useState('')
   const [history, setHistory] = useState<UserHistory | null>(null)
   const [historyLoading, setHistoryLoading] = useState(false)
