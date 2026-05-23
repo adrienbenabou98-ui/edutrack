@@ -1,20 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <!-- Background -->
-  <rect width="512" height="512" rx="90" fill="#4f46e5"/>
-
-  <!-- Magnifying glass handle -->
-  <line x1="318" y1="358" x2="460" y2="468" stroke="white" stroke-width="54" stroke-linecap="round"/>
+  <rect width="512" height="512" rx="100" fill="#4f46e5"/>
 
   <!-- Magnifying glass ring -->
-  <circle cx="205" cy="280" r="148" fill="none" stroke="white" stroke-width="50"/>
+  <circle cx="210" cy="290" r="140" fill="none" stroke="white" stroke-width="52"/>
 
-  <!-- Graduation cap board (mortarboard flat top) -->
-  <polygon points="205,42 392,110 205,178 18,110" fill="white"/>
+  <!-- Magnifying glass handle -->
+  <line x1="314" y1="394" x2="438" y2="460" stroke="white" stroke-width="52" stroke-linecap="round"/>
 
-  <!-- Cap stem connecting board to ring -->
-  <rect x="178" y="130" width="54" height="52" fill="white"/>
+  <!-- Graduation cap board -->
+  <polygon points="210,60 390,122 210,184 30,122" fill="#fbbf24"/>
 
-  <!-- Tassel -->
-  <line x1="392" y1="110" x2="392" y2="185" stroke="#fbbf24" stroke-width="9"/>
-  <circle cx="392" cy="200" r="15" fill="#fbbf24"/>
+  <!-- Cap band -->
+  <rect x="172" y="122" width="76" height="46" rx="6" fill="#f59e0b"/>
+
+  <!-- Tassel string -->
+  <line x1="390" y1="122" x2="390" y2="196" stroke="#fbbf24" stroke-width="8"/>
+  <!-- Tassel bob -->
+  <circle cx="390" cy="212" r="16" fill="#fbbf24"/>
 </svg>
