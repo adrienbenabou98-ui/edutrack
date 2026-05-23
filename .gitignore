@@ -19,6 +19,9 @@ dist-ssr
 release/
 electron/dist-electron/
 
+# DB backups (keep locally, don't commit)
+backups/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
