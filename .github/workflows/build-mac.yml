@@ -23,7 +23,7 @@ jobs:
         run: |
           npx vite build
           npx tsc -p electron/tsconfig.json
-          npx electron-builder --mac
+          npx electron-builder --mac --publish never
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
