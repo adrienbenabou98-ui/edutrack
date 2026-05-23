@@ -6,6 +6,19 @@ Available as a web app and an Electron desktop app.
 
 ---
 
+## Download
+
+**[EduTrack v1.4.0 — Windows Installer](https://github.com/adrienbenabou98-ui/edutrack/releases/tag/v1.4.0)**
+
+| File | Description |
+|---|---|
+| `EduTrack Setup 1.4.0.exe` | Installer — recommended for most users |
+| `EduTrack-Windows-v1.4.0.zip` | Portable — extract and run `EduTrack.exe` |
+
+The desktop app connects to the live server. Create an account on first launch or sign in with existing credentials.
+
+---
+
 ## Features
 
 ### Teacher
