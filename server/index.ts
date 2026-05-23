@@ -1,6 +1,10 @@
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
+import { join, dirname } from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 import authRoutes from './routes/auth.js'
 import classroomRoutes from './routes/classrooms.js'
 import assignmentRoutes from './routes/assignments.js'
@@ -40,6 +44,14 @@ app.use('/api/terms', termRoutes)
 app.use('/api/external-grades', externalGradeRoutes)
 app.use('/api/units', unitRoutes)
 app.use('/api/understanding-levels', understandingLevelRoutes)
+
+// In production, serve the built frontend from the same server
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(join(__dirname, '../../dist')))
+  app.get('*path', (_req, res) => {
+    res.sendFile(join(__dirname, '../../dist/index.html'))
+  })
+}
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`)

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background -->
+  <rect width="512" height="512" rx="90" fill="#4f46e5"/>
+
+  <!-- Magnifying glass handle -->
+  <line x1="318" y1="358" x2="460" y2="468" stroke="white" stroke-width="54" stroke-linecap="round"/>
+
+  <!-- Magnifying glass ring -->
+  <circle cx="205" cy="280" r="148" fill="none" stroke="white" stroke-width="50"/>
+
+  <!-- Graduation cap board (mortarboard flat top) -->
+  <polygon points="205,42 392,110 205,178 18,110" fill="white"/>
+
+  <!-- Cap stem connecting board to ring -->
+  <rect x="178" y="130" width="54" height="52" fill="white"/>
+
+  <!-- Tassel -->
+  <line x1="392" y1="110" x2="392" y2="185" stroke="#fbbf24" stroke-width="9"/>
+  <circle cx="392" cy="200" r="15" fill="#fbbf24"/>
+</svg>

@@ -43,7 +43,8 @@ export default function Analytics({ classroomId: propId }: { classroomId?: strin
   }
 
   function exportCSV() {
-    window.open(`http://localhost:4000/api/export/classroom/${classroomId}/csv?token=${localStorage.getItem('access_token')}`, '_blank')
+    const base = (import.meta.env.VITE_API_URL ?? 'http://localhost:4000') as string
+    window.open(`${base}/api/export/classroom/${classroomId}/csv?token=${localStorage.getItem('access_token')}`, '_blank')
   }
 
   if (!data) return <div className="py-16 text-center text-gray-400">Loading analytics…</div>

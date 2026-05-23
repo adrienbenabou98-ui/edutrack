@@ -5,6 +5,13 @@ import { fileURLToPath } from 'url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const isDev = process.env.NODE_ENV === 'development'
 
+function getIconPath() {
+  const iconFile = process.platform === 'win32' ? 'icon.ico' : 'icon.png'
+  return app.isPackaged
+    ? path.join(process.resourcesPath, iconFile)
+    : path.join(__dirname, '../../build', iconFile)
+}
+
 function createWindow() {
   const win = new BrowserWindow({
     width: 1280,
@@ -12,6 +19,7 @@ function createWindow() {
     minWidth: 900,
     minHeight: 600,
     titleBarStyle: 'hiddenInset',
+    icon: getIconPath(),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
