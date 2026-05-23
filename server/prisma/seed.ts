@@ -29,6 +29,11 @@ async function main() {
 
   const hash = (p: string) => bcrypt.hash(p, 12)
 
+  // Admin (dev account)
+  await prisma.user.create({
+    data: { email: 'admin@edutrack.demo', passwordHash: await hash('admin1234'), name: 'Admin', role: 'ADMIN' },
+  })
+
   // Teacher
   const teacher = await prisma.user.create({
     data: { email: 'teacher@edutrack.demo', passwordHash: await hash('demo1234'), name: 'Sarah Mitchell', role: 'TEACHER' },

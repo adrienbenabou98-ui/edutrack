@@ -3,7 +3,13 @@ import { useAuthStore } from '../store/auth.store'
 
 interface Props {
   children: React.ReactNode
-  role?: 'TEACHER' | 'STUDENT'
+  role?: 'TEACHER' | 'STUDENT' | 'ADMIN'
+}
+
+function homeFor(role: string) {
+  if (role === 'TEACHER') return '/teacher'
+  if (role === 'ADMIN') return '/admin'
+  return '/student'
 }
 
 export default function ProtectedRoute({ children, role }: Props) {
@@ -20,7 +26,7 @@ export default function ProtectedRoute({ children, role }: Props) {
 
   if (!user) return <Navigate to="/login" replace />
   if (role && user.role !== role) {
-    return <Navigate to={user.role === 'TEACHER' ? '/teacher' : '/student'} replace />
+    return <Navigate to={homeFor(user.role)} replace />
   }
 
   return <>{children}</>

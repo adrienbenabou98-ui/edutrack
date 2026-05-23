@@ -10,6 +10,7 @@ datasource db {
 enum Role {
   TEACHER
   STUDENT
+  ADMIN
 }
 
 enum AssignmentType {
@@ -44,15 +45,17 @@ enum UnderstandingCategory {
 }
 
 model User {
-  id             String   @id @default(cuid())
-  email          String?  @unique
+  id             String    @id @default(cuid())
+  email          String?   @unique
   passwordHash   String?
-  username       String?  @unique
+  username       String?   @unique
   yearLevel      Int?
-  teacherCreated Boolean  @default(false)
+  teacherCreated Boolean   @default(false)
   role           Role
   name           String
-  createdAt      DateTime @default(now())
+  suspended      Boolean   @default(false)
+  lastLoginAt    DateTime?
+  createdAt      DateTime  @default(now())
 
   taughtClassrooms     Classroom[]           @relation("TeacherClassrooms")
   enrollments          Enrollment[]

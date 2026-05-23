@@ -23,8 +23,8 @@ export async function register(req: Request, res: Response) {
     res.status(400).json({ error: 'All fields are required' })
     return
   }
-  if (!['TEACHER', 'STUDENT'].includes(role)) {
-    res.status(400).json({ error: 'Role must be TEACHER or STUDENT' })
+  if (!['TEACHER', 'STUDENT', 'ADMIN'].includes(role)) {
+    res.status(400).json({ error: 'Role must be TEACHER, STUDENT, or ADMIN' })
     return
   }
   const existing = await prisma.user.findUnique({ where: { email } })
@@ -53,8 +53,10 @@ export async function login(req: Request, res: Response) {
       include: { enrollments: { include: { classroom: true } } },
     })
     if (!user) { res.status(401).json({ error: 'Invalid credentials' }); return }
+    if (user.suspended) { res.status(403).json({ error: 'Account suspended' }); return }
     const matchingClass = user.enrollments.find(e => e.classroom.classPassword === classPassword)
     if (!matchingClass) { res.status(401).json({ error: 'Invalid credentials' }); return }
+    await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } })
     const tokens = generateTokens(user)
     res.json({ user: { id: user.id, email: user.email, name: user.name, role: user.role }, ...tokens })
     return
@@ -70,11 +72,16 @@ export async function login(req: Request, res: Response) {
     res.status(401).json({ error: 'Invalid credentials' })
     return
   }
+  if (user.suspended) {
+    res.status(403).json({ error: 'Account suspended. Please contact your administrator.' })
+    return
+  }
   const valid = await bcrypt.compare(password, user.passwordHash)
   if (!valid) {
     res.status(401).json({ error: 'Invalid credentials' })
     return
   }
+  await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } })
   const tokens = generateTokens(user)
   res.json({
     user: { id: user.id, email: user.email, name: user.name, role: user.role },

@@ -18,6 +18,7 @@ import termRoutes from './routes/terms.js'
 import externalGradeRoutes from './routes/externalGrades.js'
 import unitRoutes from './routes/units.js'
 import understandingLevelRoutes from './routes/understandingLevels.js'
+import adminRoutes from './routes/admin.js'
 
 dotenv.config()
 
@@ -44,6 +45,7 @@ app.use('/api/terms', termRoutes)
 app.use('/api/external-grades', externalGradeRoutes)
 app.use('/api/units', unitRoutes)
 app.use('/api/understanding-levels', understandingLevelRoutes)
+app.use('/api/admin', adminRoutes)
 
 // In production, serve the built frontend from the same server
 if (process.env.NODE_ENV === 'production') {

@@ -29,7 +29,9 @@ export default function Login() {
         await loginWithUsername(username, '', classPassword)
       }
       const role = useAuthStore.getState().user?.role
-      navigate(role === 'TEACHER' ? '/teacher' : '/student')
+      if (role === 'ADMIN') navigate('/admin')
+      else if (role === 'TEACHER') navigate('/teacher')
+      else navigate('/student')
     } catch (err: any) {
       setError(err.response?.data?.error ?? 'Login failed')
     } finally {
