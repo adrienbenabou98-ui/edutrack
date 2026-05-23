@@ -1,0 +1,31 @@
+name: Build Mac Installer
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Mac DMG
+        env:
+          VITE_API_URL: https://edutrack-production-2a6d.up.railway.app
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+        run: npm run electron:build:prod -- --mac
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0
+          files: release/*.dmg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
