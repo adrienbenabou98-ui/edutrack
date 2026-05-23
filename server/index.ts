@@ -47,9 +47,9 @@ app.use('/api/understanding-levels', understandingLevelRoutes)
 
 // In production, serve the built frontend from the same server
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(join(__dirname, '../../dist')))
+  app.use(express.static(join(__dirname, '../dist')))
   app.get('*path', (_req, res) => {
-    res.sendFile(join(__dirname, '../../dist/index.html'))
+    res.sendFile(join(__dirname, '../dist/index.html'))
   })
 }
 
