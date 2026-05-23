@@ -1,0 +1,341 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  TEACHER
+  STUDENT
+}
+
+enum AssignmentType {
+  ASSIGNMENT
+  QUIZ
+  EXAM
+}
+
+enum AssignmentStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum SubmissionStatus {
+  SUBMITTED
+  GRADED
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  SHORT_ANSWER
+  LONG_ANSWER
+  FILE_UPLOAD
+}
+
+enum UnderstandingCategory {
+  EXCEEDING
+  MEETING
+  SUPPORT
+  ABSENT
+}
+
+model User {
+  id             String   @id @default(cuid())
+  email          String?  @unique
+  passwordHash   String?
+  username       String?  @unique
+  yearLevel      Int?
+  teacherCreated Boolean  @default(false)
+  role           Role
+  name           String
+  createdAt      DateTime @default(now())
+
+  taughtClassrooms     Classroom[]           @relation("TeacherClassrooms")
+  enrollments          Enrollment[]
+  submissions          Submission[]
+  sentMessages         Message[]             @relation("SentMessages")
+  receivedMessages     Message[]             @relation("ReceivedMessages")
+  gradeBoundaries      GradeBoundary[]       @relation("TeacherBoundaries")
+  unitGrades           UnitGrade[]           @relation("StudentUnitGrades")
+  commentsReceived     StudentComment[]      @relation("StudentComments")
+  commentsGiven        StudentComment[]      @relation("TeacherComments")
+  terms                Term[]                @relation("TeacherTerms")
+  externalGrades       ExternalGrade[]       @relation("StudentExternalGrades")
+  lessonUnderstandings  LessonUnderstanding[] @relation("StudentLessonUnderstandings")
+  understandingLevels   UnderstandingLevel[]  @relation("TeacherUnderstandingLevels")
+  unitAssessments      UnitAssessment[]      @relation("StudentUnitAssessments")
+}
+
+model Classroom {
+  id            String   @id @default(cuid())
+  name          String
+  teacherId     String
+  classCode     String   @unique
+  classPassword String?
+  yearLevel     Int?
+  createdAt     DateTime @default(now())
+
+  teacher             User                 @relation("TeacherClassrooms", fields: [teacherId], references: [id])
+  enrollments         Enrollment[]
+  assignments         Assignment[]
+  messages            Message[]
+  unitGrades          UnitGrade[]
+  externalAssignments ExternalAssignment[]
+  units               Unit[]
+}
+
+model Enrollment {
+  studentId   String
+  classroomId String
+  joinedAt    DateTime @default(now())
+
+  student   User      @relation(fields: [studentId], references: [id])
+  classroom Classroom @relation(fields: [classroomId], references: [id])
+
+  @@id([studentId, classroomId])
+}
+
+model Assignment {
+  id           String           @id @default(cuid())
+  classroomId  String
+  title        String
+  instructions String
+  type         AssignmentType
+  dueDate      DateTime?
+  totalPoints  Int              @default(100)
+  status       AssignmentStatus @default(DRAFT)
+  timeLimit    Int?
+  subject      String?
+  unitName     String?
+  createdAt    DateTime         @default(now())
+
+  classroom   Classroom    @relation(fields: [classroomId], references: [id])
+  questions   Question[]
+  submissions Submission[]
+}
+
+model Question {
+  id            String       @id @default(cuid())
+  assignmentId  String
+  text          String
+  type          QuestionType
+  options       Json?
+  correctAnswer String?
+  tags          String[]
+  points        Int          @default(10)
+
+  assignment Assignment @relation(fields: [assignmentId], references: [id])
+  answers    Answer[]
+}
+
+model Submission {
+  id           String           @id @default(cuid())
+  assignmentId String
+  studentId    String
+  submittedAt  DateTime         @default(now())
+  totalScore   Float?
+  curvedScore  Float?
+  curveNote    String?
+  status       SubmissionStatus @default(SUBMITTED)
+
+  assignment Assignment @relation(fields: [assignmentId], references: [id])
+  student    User       @relation(fields: [studentId], references: [id])
+  answers    Answer[]
+  feedback   Feedback?
+}
+
+model Answer {
+  id            String   @id @default(cuid())
+  submissionId  String
+  questionId    String
+  responseText  String?
+  isCorrect     Boolean?
+  pointsAwarded Float?
+
+  submission Submission @relation(fields: [submissionId], references: [id])
+  question   Question   @relation(fields: [questionId], references: [id])
+}
+
+model Feedback {
+  id           String   @id @default(cuid())
+  submissionId String   @unique
+  teacherNote  String?
+  aiSuggestion String?
+  createdAt    DateTime @default(now())
+
+  submission Submission @relation(fields: [submissionId], references: [id])
+}
+
+model Message {
+  id          String    @id @default(cuid())
+  senderId    String
+  recipientId String?
+  classroomId String?
+  body        String
+  readAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  sender    User       @relation("SentMessages", fields: [senderId], references: [id])
+  recipient User?      @relation("ReceivedMessages", fields: [recipientId], references: [id])
+  classroom Classroom? @relation(fields: [classroomId], references: [id])
+}
+
+model GradeBoundary {
+  id        String   @id @default(cuid())
+  teacherId String
+  label     String
+  minScore  Float
+  maxScore  Float
+  colour    String
+  createdAt DateTime @default(now())
+
+  teacher User @relation("TeacherBoundaries", fields: [teacherId], references: [id])
+
+  @@unique([teacherId, label])
+}
+
+model UnitGrade {
+  id           String   @id @default(cuid())
+  studentId    String
+  classroomId  String
+  subject      String
+  unitName     String
+  averageScore Float?
+  updatedAt    DateTime @updatedAt
+
+  student   User      @relation("StudentUnitGrades", fields: [studentId], references: [id])
+  classroom Classroom @relation(fields: [classroomId], references: [id])
+
+  @@unique([studentId, classroomId, subject, unitName])
+}
+
+model StudentComment {
+  id         String   @id @default(cuid())
+  studentId  String
+  teacherId  String
+  strengths  String?
+  weaknesses String?
+  notes      String?
+  updatedAt  DateTime @updatedAt
+
+  student User @relation("StudentComments", fields: [studentId], references: [id])
+  teacher User @relation("TeacherComments", fields: [teacherId], references: [id])
+
+  @@unique([studentId, teacherId])
+}
+
+model Term {
+  id        String   @id @default(cuid())
+  teacherId String
+  name      String
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  teacher             User                 @relation("TeacherTerms", fields: [teacherId], references: [id])
+  externalAssignments ExternalAssignment[]
+  units               Unit[]
+}
+
+model ExternalAssignment {
+  id          String   @id @default(cuid())
+  classroomId String
+  termId      String?
+  title       String
+  description String?
+  date        DateTime
+  totalMarks  Int      @default(100)
+  weight      Float    @default(0)
+  createdAt   DateTime @default(now())
+
+  classroom      Classroom       @relation(fields: [classroomId], references: [id])
+  term           Term?           @relation(fields: [termId], references: [id])
+  externalGrades ExternalGrade[]
+}
+
+model ExternalGrade {
+  id                   String   @id @default(cuid())
+  externalAssignmentId String
+  studentId            String
+  score                Float?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  externalAssignment ExternalAssignment @relation(fields: [externalAssignmentId], references: [id], onDelete: Cascade)
+  student            User               @relation("StudentExternalGrades", fields: [studentId], references: [id])
+
+  @@unique([externalAssignmentId, studentId])
+}
+
+model Unit {
+  id          String   @id @default(cuid())
+  classroomId String
+  termId      String?
+  name        String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  classroom       Classroom        @relation(fields: [classroomId], references: [id])
+  term            Term?            @relation(fields: [termId], references: [id])
+  lessons         Lesson[]
+  unitAssessments UnitAssessment[]
+}
+
+model Lesson {
+  id        String    @id @default(cuid())
+  unitId    String
+  title     String
+  date      DateTime?
+  order     Int       @default(0)
+  createdAt DateTime  @default(now())
+
+  unit           Unit                  @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  understandings LessonUnderstanding[]
+}
+
+model UnderstandingLevel {
+  id        String                @id @default(cuid())
+  teacherId String
+  label     String
+  colour    String
+  order     Int
+  isAbsent  Boolean               @default(false)
+  category  UnderstandingCategory @default(SUPPORT)
+  createdAt DateTime              @default(now())
+
+  teacher              User                  @relation("TeacherUnderstandingLevels", fields: [teacherId], references: [id])
+  lessonUnderstandings LessonUnderstanding[]
+}
+
+model LessonUnderstanding {
+  id                   String   @id @default(cuid())
+  lessonId             String
+  studentId            String
+  understandingLevelId String?
+  updatedAt            DateTime @updatedAt
+
+  lesson             Lesson              @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  student            User                @relation("StudentLessonUnderstandings", fields: [studentId], references: [id])
+  understandingLevel UnderstandingLevel? @relation(fields: [understandingLevelId], references: [id], onDelete: SetNull)
+
+  @@unique([lessonId, studentId])
+}
+
+model UnitAssessment {
+  id         String   @id @default(cuid())
+  unitId     String
+  studentId  String
+  score      Float?
+  totalMarks Int      @default(100)
+  updatedAt  DateTime @updatedAt
+
+  unit    Unit @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  student User @relation("StudentUnitAssessments", fields: [studentId], references: [id])
+
+  @@unique([unitId, studentId])
+}
