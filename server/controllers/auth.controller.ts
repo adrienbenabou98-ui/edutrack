@@ -68,16 +68,16 @@ export async function register(req: Request, res: Response) {
 export async function login(req: Request, res: Response) {
   const { email, password, username, classCode, classPassword } = req.body
 
-  // Year 1-6 username login — just username + class password, no class code needed
-  if (username && classPassword && !email) {
+  // Username + class code login — for teacher-created student accounts
+  if (username && classCode && !email) {
     const user = await prisma.user.findUnique({
       where: { username },
       include: { enrollments: { include: { classroom: true } } },
     })
     if (!user) { res.status(401).json({ error: 'Invalid credentials' }); return }
     if (user.suspended) { res.status(403).json({ error: 'Account suspended' }); return }
-    const matchingClass = user.enrollments.find(e => e.classroom.classPassword === classPassword)
-    if (!matchingClass) { res.status(401).json({ error: 'Invalid credentials' }); return }
+    const matchingClass = user.enrollments.find(e => e.classroom.classCode === classCode)
+    if (!matchingClass) { res.status(401).json({ error: 'Invalid username or class code' }); return }
     await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } })
     const tokens = generateTokens(user)
     res.json({ user: { id: user.id, email: user.email, name: user.name, role: user.role }, ...tokens })

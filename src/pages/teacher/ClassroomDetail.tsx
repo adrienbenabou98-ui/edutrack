@@ -27,7 +27,7 @@ type Tab = 'assignments' | 'students' | 'ext-grades' | 'units'
 interface StudentForm { name: string; username: string; email: string; password: string; yearLevel: string }
 const emptyStudentForm = (): StudentForm => ({ name: '', username: '', email: '', password: '', yearLevel: '' })
 
-interface ClassSettingsForm { classPassword: string; yearLevel: string }
+interface ClassSettingsForm { yearLevel: string }
 
 export default function ClassroomDetail() {
   const { id } = useParams()
@@ -49,18 +49,13 @@ export default function ClassroomDetail() {
   const [studentForm, setStudentForm] = useState<StudentForm>(emptyStudentForm())
   const [studentSaving, setStudentSaving] = useState(false)
   const [studentError, setStudentError] = useState('')
-  const [showPasswordFor, setShowPasswordFor] = useState<string | null>(null)
-
   // Classroom settings state
   const [showSettings, setShowSettings] = useState(false)
-  const [settingsForm, setSettingsForm] = useState<ClassSettingsForm>({ classPassword: '', yearLevel: '' })
+  const [settingsForm, setSettingsForm] = useState<ClassSettingsForm>({ yearLevel: '' })
   const [settingsSaving, setSettingsSaving] = useState(false)
   useEffect(() => {
     if (classroom) {
-      setSettingsForm({
-        classPassword: classroom.classPassword ?? '',
-        yearLevel: classroom.yearLevel?.toString() ?? '',
-      })
+      setSettingsForm({ yearLevel: classroom.yearLevel?.toString() ?? '' })
     }
   }, [classroom])
 
@@ -123,10 +118,9 @@ export default function ClassroomDetail() {
     setSettingsSaving(true)
     try {
       const { data } = await api.patch(`/classrooms/${id}`, {
-        classPassword: settingsForm.classPassword || null,
         yearLevel: settingsForm.yearLevel ? Number(settingsForm.yearLevel) : null,
       })
-      setClassroom(c => c ? { ...c, classPassword: data.classPassword, yearLevel: data.yearLevel } : c)
+      setClassroom(c => c ? { ...c, yearLevel: data.yearLevel } : c)
       setShowSettings(false)
     } finally {
       setSettingsSaving(false)
@@ -203,14 +197,6 @@ export default function ClassroomDetail() {
                 {[1,2,3,4,5,6,7,8,9,10,11,12].map(y => <option key={y} value={y}>Year {y}</option>)}
               </select>
             </div>
-            <div className="flex-1 min-w-48">
-              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-                Class password {settingsForm.yearLevel && Number(settingsForm.yearLevel) <= 6 ? '(required for Yr 1-6 login)' : '(optional)'}
-              </label>
-              <input value={settingsForm.classPassword} onChange={e => setSettingsForm(f => ({ ...f, classPassword: e.target.value }))}
-                placeholder="Set a shared class password"
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-            </div>
             <div className="flex gap-2">
               <button type="button" onClick={() => setShowSettings(false)} className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">Cancel</button>
               <button type="submit" disabled={settingsSaving} className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50">
@@ -220,18 +206,16 @@ export default function ClassroomDetail() {
           </form>
         )}
 
-        {/* Class password info bar for year 1-6 */}
-        {tab === 'students' && isLowerSchool && classroom.classPassword && !showSettings && (
-          <div className="mb-4 flex items-center gap-3 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700 rounded-xl px-4 py-3">
-            <span className="text-sm text-indigo-700 dark:text-indigo-300 font-medium">Class password:</span>
-            <span className="font-mono text-sm">
-              {showPasswordFor === classroom.id ? classroom.classPassword : '••••••••'}
+        {/* Class login info bar — shown whenever there are teacher-created students */}
+        {tab === 'students' && classroom.enrollments.some(e => e.student.teacherCreated) && !showSettings && (
+          <div className="mb-4 flex items-center gap-2 flex-wrap bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700 rounded-xl px-4 py-3">
+            <svg className="w-4 h-4 text-indigo-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" />
+            </svg>
+            <span className="text-sm text-indigo-700 dark:text-indigo-300">
+              Students log in at the <strong>Class login</strong> tab using their <strong>username</strong> + class code&nbsp;
+              <span className="font-mono font-semibold bg-indigo-100 dark:bg-indigo-800 px-1.5 py-0.5 rounded">{classroom.classCode}</span>
             </span>
-            <button onClick={() => setShowPasswordFor(p => p === classroom.id ? null : classroom.id)}
-              className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline">
-              {showPasswordFor === classroom.id ? 'Hide' : 'Show'}
-            </button>
-            <span className="text-xs text-indigo-500 ml-auto">Students in Years 1-6 log in with their username + this password + class code <span className="font-mono font-medium">{classroom.classCode}</span></span>
           </div>
         )}
 
@@ -265,10 +249,8 @@ export default function ClassroomDetail() {
             <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
               <p className="text-gray-400">No students yet</p>
               <p className="text-sm text-gray-400 mt-1">
-                {isLowerSchool
-                  ? 'Use "+ Add Student" to create profiles for your class.'
-                  : `Share code: `}
-                {!isLowerSchool && <span className="font-mono font-medium text-gray-600 dark:text-gray-300">{classroom.classCode}</span>}
+                Use <strong>+ Add Student</strong> to create accounts, or share code{' '}
+                <span className="font-mono font-medium text-gray-600 dark:text-gray-300">{classroom.classCode}</span> for self-sign-up.
               </p>
             </div>
           ) : (
@@ -382,35 +364,17 @@ export default function ClassroomDetail() {
                 </select>
               </div>
 
-              {/* Year 1-6: username only */}
-              {(isLowerSchool || (studentForm.yearLevel && Number(studentForm.yearLevel) <= 6)) ? (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Username <span className="font-normal text-gray-400">(for student login)</span>
-                  </label>
-                  <input value={studentForm.username} onChange={e => setStudentForm(f => ({ ...f, username: e.target.value }))}
-                    placeholder="e.g. alice.j"
-                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-                  <p className="text-xs text-gray-400 mt-1">Student logs in with username + class code + class password.</p>
-                </div>
-              ) : (
-                <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
-                    <input type="email" value={studentForm.email} onChange={e => setStudentForm(f => ({ ...f, email: e.target.value }))}
-                      placeholder="student@school.com"
-                      className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-                  </div>
-                  {!editStudentId && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Initial password</label>
-                      <input type="password" value={studentForm.password} onChange={e => setStudentForm(f => ({ ...f, password: e.target.value }))}
-                        placeholder="Set a temporary password"
-                        className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-                    </div>
-                  )}
-                </>
-              )}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Username <span className="font-normal text-gray-400">(used to log in)</span>
+                </label>
+                <input value={studentForm.username} onChange={e => setStudentForm(f => ({ ...f, username: e.target.value }))}
+                  placeholder="e.g. alice.j"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                <p className="text-xs text-gray-400 mt-1">
+                  Student logs in with this username + class code <span className="font-mono font-medium">{classroom.classCode}</span>
+                </p>
+              </div>
 
               <div className="flex gap-3 justify-end pt-2">
                 <button type="button" onClick={() => setShowStudentModal(false)}

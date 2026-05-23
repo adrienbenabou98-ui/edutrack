@@ -9,9 +9,9 @@ export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  // Username mode fields (years 1-6)
+  // Username + class code mode (teacher-created student accounts)
   const [username, setUsername] = useState('')
-  const [classPassword, setClassPassword] = useState('')
+  const [classCode, setClassCode] = useState('')
 
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -26,7 +26,7 @@ export default function Login() {
       if (mode === 'email') {
         await login(email, password)
       } else {
-        await loginWithUsername(username, '', classPassword)
+        await loginWithUsername(username, classCode)
       }
       const role = useAuthStore.getState().user?.role
       if (role === 'ADMIN') navigate('/admin')
@@ -60,7 +60,7 @@ export default function Login() {
             onClick={() => { setMode('username'); setError('') }}
             className={`flex-1 py-1.5 rounded-md text-sm font-medium transition-colors ${mode === 'username' ? 'bg-white dark:bg-gray-600 shadow-sm text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}
           >
-            Years 1–6
+            Class login
           </button>
         </div>
 
@@ -109,15 +109,15 @@ export default function Login() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Class password</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Class code</label>
                 <input
-                  type="password"
-                  value={classPassword}
-                  onChange={e => setClassPassword(e.target.value)}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="Ask your teacher"
+                  value={classCode}
+                  onChange={e => setClassCode(e.target.value.toUpperCase())}
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono tracking-widest"
+                  placeholder="e.g. BIO101"
                   required
                 />
+                <p className="mt-1.5 text-xs text-gray-400">Your teacher will give you the class code.</p>
               </div>
             </>
           )}
