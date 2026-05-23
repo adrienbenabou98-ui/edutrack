@@ -20,7 +20,10 @@ jobs:
         env:
           VITE_API_URL: https://edutrack-production-2a6d.up.railway.app
           CSC_IDENTITY_AUTO_DISCOVERY: false
-        run: npm run electron:build:prod -- --mac
+        run: |
+          npx vite build
+          npx tsc -p electron/tsconfig.json
+          npx electron-builder --mac
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2

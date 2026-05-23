@@ -17,6 +17,7 @@
     "seed": "tsx server/prisma/seed.ts",
     "electron:dev": "concurrently \"vite\" \"npm run server\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
     "electron:build": "vite build && tsc -p electron/tsconfig.json && electron-builder",
+    "electron:build:prod": "cross-env CSC_IDENTITY_AUTO_DISCOVERY=false VITE_API_URL=https://edutrack-production-2a6d.up.railway.app vite build && tsc -p electron/tsconfig.json && electron-builder",
     "generate-icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {
