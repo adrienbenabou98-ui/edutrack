@@ -90,7 +90,7 @@ export async function login(req: Request, res: Response) {
     res.status(400).json({ error: 'Email and password are required' })
     return
   }
-  const user = await prisma.user.findUnique({ where: { email } })
+  const user = await prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } })
   if (!user || !user.passwordHash) {
     res.status(401).json({ error: 'Invalid credentials' })
     return
