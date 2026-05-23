@@ -2,12 +2,18 @@
 
 A full-stack academic tracking platform for teachers and students. Teachers manage classrooms, assign work, track understanding lesson by lesson, and get AI-powered insights. Students submit work and receive instant feedback.
 
-Available as a web app and an Electron desktop app.
+Available as a web app, a Chromebook PWA, and a Windows desktop app.
 
 ---
 
-## Download
+## Access EduTrack
 
+### Web / Chromebook
+Visit **https://edutrack-production-2a6d.up.railway.app** in any browser.
+
+On Chromebook, install it as an app: open the URL in Chrome, then click the install icon in the address bar (or Chrome menu → Install EduTrack). It will appear in your launcher like a native app.
+
+### Windows Desktop
 **[EduTrack v1.5.0 — Windows Installer](https://github.com/adrienbenabou98-ui/edutrack/releases/tag/v1.5.0)**
 
 | File | Description |
@@ -15,7 +21,7 @@ Available as a web app and an Electron desktop app.
 | `EduTrack Setup 1.5.0.exe` | Installer — recommended for most users |
 | `EduTrack-Windows-v1.5.0.zip` | Portable — extract and run `EduTrack.exe` |
 
-The desktop app connects to the live server. Create an account on first launch or sign in with existing credentials.
+All versions connect to the same live server. Create an account on first use or sign in with existing credentials.
 
 ---
 
