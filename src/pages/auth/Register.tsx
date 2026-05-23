@@ -2,8 +2,28 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/auth.store'
 
+const PW_RULES = [
+  { label: 'At least 8 characters', test: (p: string) => p.length >= 8 },
+  { label: 'Contains a number or special character (!@#$…)', test: (p: string) => /[0-9!@#$%^&*()\-_=+\[\]{};':"\\|,.<>/?`~]/.test(p) },
+]
+
+function CheckIcon({ ok, touched }: { ok: boolean; touched: boolean }) {
+  if (!touched) return <span className="w-4 h-4 rounded-full border border-gray-300 inline-block flex-shrink-0" />
+  if (ok) return (
+    <svg className="w-4 h-4 text-green-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
+  )
+  return (
+    <svg className="w-4 h-4 text-red-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  )
+}
+
 export default function Register() {
   const [form, setForm] = useState({ email: '', password: '', name: '', role: 'STUDENT' })
+  const [passwordTouched, setPasswordTouched] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const register = useAuthStore(s => s.register)
@@ -13,8 +33,12 @@ export default function Register() {
     setForm(f => ({ ...f, [field]: value }))
   }
 
+  const allRulesMet = PW_RULES.every(r => r.test(form.password))
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    setPasswordTouched(true)
+    if (!allRulesMet) return
     setError('')
     setLoading(true)
     try {
@@ -68,11 +92,26 @@ export default function Register() {
             <input
               type="password"
               value={form.password}
-              onChange={e => update('password', e.target.value)}
+              onChange={e => { update('password', e.target.value); setPasswordTouched(true) }}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="••••••••"
               required
             />
+            <ul className="mt-2 space-y-1">
+              {PW_RULES.map(rule => {
+                const ok = rule.test(form.password)
+                return (
+                  <li key={rule.label} className="flex items-center gap-2">
+                    <CheckIcon ok={ok} touched={passwordTouched} />
+                    <span className={`text-xs transition-colors ${
+                      !passwordTouched ? 'text-gray-400' : ok ? 'text-green-600' : 'text-red-500'
+                    }`}>
+                      {rule.label}
+                    </span>
+                  </li>
+                )
+              })}
+            </ul>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">I am a…</label>
