@@ -15,6 +15,10 @@ dist-ssr
 .env.*
 !.env.example
 
+# Electron build output (hosted on GitHub Releases instead)
+release/
+electron/dist-electron/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

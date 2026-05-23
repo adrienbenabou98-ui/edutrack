@@ -55,6 +55,7 @@ model User {
   name           String
   suspended      Boolean   @default(false)
   lastLoginAt    DateTime?
+  tokenVersion   Int       @default(0)
   createdAt      DateTime  @default(now())
 
   taughtClassrooms     Classroom[]           @relation("TeacherClassrooms")
@@ -71,6 +72,8 @@ model User {
   lessonUnderstandings  LessonUnderstanding[] @relation("StudentLessonUnderstandings")
   understandingLevels   UnderstandingLevel[]  @relation("TeacherUnderstandingLevels")
   unitAssessments      UnitAssessment[]      @relation("StudentUnitAssessments")
+  announcements        Announcement[]        @relation("AdminAnnouncements")
+  auditLogs            AuditLog[]            @relation("AdminAuditLogs")
 }
 
 model Classroom {
@@ -80,6 +83,7 @@ model Classroom {
   classCode     String   @unique
   classPassword String?
   yearLevel     Int?
+  archived      Boolean  @default(false)
   createdAt     DateTime @default(now())
 
   teacher             User                 @relation("TeacherClassrooms", fields: [teacherId], references: [id])
@@ -341,4 +345,32 @@ model UnitAssessment {
   student User @relation("StudentUnitAssessments", fields: [studentId], references: [id])
 
   @@unique([unitId, studentId])
+}
+
+model PlatformSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model Announcement {
+  id          String   @id @default(cuid())
+  message     String
+  active      Boolean  @default(true)
+  createdById String
+  createdAt   DateTime @default(now())
+
+  createdBy User @relation("AdminAnnouncements", fields: [createdById], references: [id])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  adminId   String
+  action    String
+  target    String?
+  details   Json?
+  createdAt DateTime @default(now())
+
+  admin User @relation("AdminAuditLogs", fields: [adminId], references: [id])
 }

@@ -15,6 +15,12 @@ import TeacherSettings from './pages/teacher/Settings'
 import TeacherStudents from './pages/teacher/Students'
 import MessagesPage from './pages/Messages'
 import AdminUsers from './pages/admin/Users'
+import AdminClassrooms from './pages/admin/Classrooms'
+import AdminContent from './pages/admin/Content'
+import AdminAnalytics from './pages/admin/Analytics'
+import AdminPlatformSettings from './pages/admin/PlatformSettings'
+import AdminSecurity from './pages/admin/Security'
+import AnnouncementBanner from './components/AnnouncementBanner'
 import StudentDashboard from './pages/student/Dashboard'
 import TakeAssignment from './pages/student/TakeAssignment'
 import StudentProgress from './pages/student/Progress'
@@ -27,6 +33,7 @@ export default function App() {
   return (
     <ErrorBoundary>
     <BrowserRouter>
+      <AnnouncementBanner />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -40,6 +47,11 @@ export default function App() {
         <Route path="/teacher/students" element={<ProtectedRoute role="TEACHER"><TeacherStudents /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute role="ADMIN"><AdminUsers /></ProtectedRoute>} />
         <Route path="/admin/users" element={<ProtectedRoute role="ADMIN"><AdminUsers /></ProtectedRoute>} />
+        <Route path="/admin/classrooms" element={<ProtectedRoute role="ADMIN"><AdminClassrooms /></ProtectedRoute>} />
+        <Route path="/admin/content" element={<ProtectedRoute role="ADMIN"><AdminContent /></ProtectedRoute>} />
+        <Route path="/admin/analytics" element={<ProtectedRoute role="ADMIN"><AdminAnalytics /></ProtectedRoute>} />
+        <Route path="/admin/settings" element={<ProtectedRoute role="ADMIN"><AdminPlatformSettings /></ProtectedRoute>} />
+        <Route path="/admin/security" element={<ProtectedRoute role="ADMIN"><AdminSecurity /></ProtectedRoute>} />
         <Route path="/student" element={<ProtectedRoute role="STUDENT"><StudentDashboard /></ProtectedRoute>} />
         <Route path="/student/assignment/:id" element={<ProtectedRoute role="STUDENT"><TakeAssignment /></ProtectedRoute>} />
         <Route path="/student/progress" element={<ProtectedRoute role="STUDENT"><StudentProgressPage /></ProtectedRoute>} />

@@ -9,12 +9,12 @@ interface NavItem {
 }
 
 const nav: NavItem[] = [
-  { to: '/admin/users',      label: 'Users',      icon: '👥', live: true  },
-  { to: '/admin/classrooms', label: 'Classrooms', icon: '🏫', live: false },
-  { to: '/admin/content',    label: 'Content',    icon: '📋', live: false },
-  { to: '/admin/analytics',  label: 'Analytics',  icon: '📊', live: false },
-  { to: '/admin/settings',   label: 'Settings',   icon: '⚙️',  live: false },
-  { to: '/admin/security',   label: 'Security',   icon: '🔒', live: false },
+  { to: '/admin/users',      label: 'Users',      icon: '👥', live: true },
+  { to: '/admin/classrooms', label: 'Classrooms', icon: '🏫', live: true },
+  { to: '/admin/content',    label: 'Content',    icon: '📋', live: true },
+  { to: '/admin/analytics',  label: 'Analytics',  icon: '📊', live: true },
+  { to: '/admin/settings',   label: 'Settings',   icon: '⚙️',  live: true },
+  { to: '/admin/security',   label: 'Security',   icon: '🔒', live: true },
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

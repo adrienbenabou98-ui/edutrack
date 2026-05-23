@@ -3,9 +3,9 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { prisma } from '../prisma/client.js'
 
-function generateTokens(user: { id: string; role: string; email?: string | null }) {
+function generateTokens(user: { id: string; role: string; email?: string | null; tokenVersion?: number }) {
   const access = jwt.sign(
-    { id: user.id, role: user.role, email: user.email ?? '' },
+    { id: user.id, role: user.role, email: user.email ?? '', tv: user.tokenVersion ?? 0 },
     process.env.JWT_SECRET!,
     { expiresIn: '15m' }
   )

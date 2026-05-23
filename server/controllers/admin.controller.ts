@@ -3,6 +3,10 @@ import bcrypt from 'bcryptjs'
 import { prisma } from '../prisma/client.js'
 import type { AuthRequest } from '../middleware/auth.js'
 
+async function audit(adminId: string, action: string, target?: string, details?: object) {
+  await prisma.auditLog.create({ data: { adminId, action, target, details } }).catch(() => {})
+}
+
 function safeUser(u: any) {
   return {
     id: u.id,
@@ -62,6 +66,7 @@ export async function createUser(req: AuthRequest, res: Response) {
     data: { name, email, passwordHash, role },
     select: { id: true, name: true, email: true, role: true, suspended: true, lastLoginAt: true, createdAt: true },
   })
+  await audit(req.user!.id, 'USER_CREATED', name, { role })
   res.status(201).json(user)
 }
 
@@ -89,6 +94,7 @@ export async function updateUser(req: AuthRequest, res: Response) {
     data: { ...(name && { name }), ...(email && { email }), ...(role && { role }) },
     select: { id: true, name: true, email: true, role: true, suspended: true, lastLoginAt: true, createdAt: true },
   })
+  await audit(req.user!.id, 'USER_UPDATED', user.name, { ...(role && { role }) })
   res.json(user)
 }
 
@@ -97,7 +103,9 @@ export async function deleteUser(req: AuthRequest, res: Response) {
   if (id === req.user!.id) {
     res.status(400).json({ error: 'You cannot delete your own account' }); return
   }
+  const target = await prisma.user.findUnique({ where: { id }, select: { name: true } })
   await prisma.user.delete({ where: { id } })
+  await audit(req.user!.id, 'USER_DELETED', target?.name)
   res.json({ success: true })
 }
 
@@ -105,7 +113,9 @@ export async function resetPassword(req: AuthRequest, res: Response) {
   const { id } = req.params
   const newPassword = Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6).toUpperCase()
   const passwordHash = await bcrypt.hash(newPassword, 12)
+  const target = await prisma.user.findUnique({ where: { id }, select: { name: true } })
   await prisma.user.update({ where: { id }, data: { passwordHash } })
+  await audit(req.user!.id, 'PASSWORD_RESET', target?.name)
   res.json({ newPassword })
 }
 
@@ -121,5 +131,6 @@ export async function toggleSuspend(req: AuthRequest, res: Response) {
     data: { suspended: !user.suspended },
     select: { id: true, name: true, email: true, role: true, suspended: true, lastLoginAt: true, createdAt: true },
   })
+  await audit(req.user!.id, 'USER_SUSPENDED', user.name, { suspended: updated.suspended })
   res.json(updated)
 }
