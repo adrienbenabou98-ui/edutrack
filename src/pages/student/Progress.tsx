@@ -66,7 +66,7 @@ export default function StudentProgress() {
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="name" tick={{ fontSize: 12 }} />
               <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} unit="%" />
-              <Tooltip formatter={(v: number) => [`${v}%`, 'Score']} />
+              <Tooltip formatter={(v) => [`${Number(v)}%`, 'Score']} />
               <Line type="monotone" dataKey="score" stroke="#0d9488" strokeWidth={2} dot={{ r: 4 }} />
             </LineChart>
           </ResponsiveContainer>

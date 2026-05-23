@@ -45,7 +45,7 @@ export default function GradeTracker() {
   const [selectedId, setSelectedId] = useState<string>('')
   const [data, setData] = useState<TrackerData | null>(null)
   const [loading, setLoading] = useState(false)
-  const [curveStudent, setCurveStudent] = useState<StudentRow | null>(null)
+  const [_curveStudent, _setCurveStudent] = useState<StudentRow | null>(null)
   const [showCurveAll, setShowCurveAll] = useState(false)
   const [gradeTab, setGradeTab] = useState<GradeTab>('overview')
   const [enrolledStudents, setEnrolledStudents] = useState<{ id: string; name: string }[]>([])

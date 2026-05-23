@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import api from '../../api/client'
 import { useBoundaryStore } from '../../store/gradeBoundary.store'
@@ -55,8 +55,6 @@ export default function ClassroomDetail() {
   const [showSettings, setShowSettings] = useState(false)
   const [settingsForm, setSettingsForm] = useState<ClassSettingsForm>({ classPassword: '', yearLevel: '' })
   const [settingsSaving, setSettingsSaving] = useState(false)
-  const settingsRef = useRef<HTMLDivElement>(null)
-
   useEffect(() => {
     if (classroom) {
       setSettingsForm({

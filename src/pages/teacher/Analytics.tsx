@@ -83,7 +83,7 @@ export default function Analytics({ classroomId: propId }: { classroomId?: strin
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="name" tick={{ fontSize: 12 }} />
               <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} unit="%" />
-              <Tooltip formatter={(v: number) => [`${v}%`, 'Average']} />
+              <Tooltip formatter={(v) => [`${Number(v)}%`, 'Average']} />
               <Bar dataKey="score" fill="#6366f1" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
