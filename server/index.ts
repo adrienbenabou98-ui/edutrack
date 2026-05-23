@@ -27,6 +27,9 @@ dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 4000
 
+// Trust Railway/Heroku reverse proxy so rate limiters see the real client IP
+app.set('trust proxy', 1)
+
 // Security headers (CSP disabled — React SPA with inline scripts)
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }))
 
@@ -102,6 +105,15 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(join(__dirname, '../dist/index.html'))
   })
 }
+
+// Clean JSON error for oversized payloads instead of HTML stack trace
+app.use((err: any, _req: any, res: any, next: any) => {
+  if (err.type === 'entity.too.large') {
+    res.status(413).json({ error: 'Request too large (max 1MB)' })
+    return
+  }
+  next(err)
+})
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`)

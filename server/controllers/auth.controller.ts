@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import type { AuthRequest } from '../middleware/auth.js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { prisma } from '../prisma/client.js'
@@ -66,7 +67,7 @@ export async function register(req: Request, res: Response) {
 }
 
 export async function login(req: Request, res: Response) {
-  const { email, password, username, classCode, classPassword } = req.body
+  const { email, password, username, classCode } = req.body
 
   // Username + class code login — for teacher-created student accounts
   if (username && classCode && !email) {
@@ -124,6 +125,10 @@ export async function refresh(req: Request, res: Response) {
       res.status(401).json({ error: 'User not found' })
       return
     }
+    if (user.suspended) {
+      res.status(403).json({ error: 'Account suspended' })
+      return
+    }
     // If token carries tv, verify it matches current tokenVersion (honours force-logout)
     if (payload.tv !== undefined && payload.tv !== user.tokenVersion) {
       res.status(401).json({ error: 'Session expired' })
@@ -136,10 +141,9 @@ export async function refresh(req: Request, res: Response) {
   }
 }
 
-export async function me(req: Request, res: Response) {
-  const authReq = req as any
+export async function me(req: AuthRequest, res: Response) {
   const user = await prisma.user.findUnique({
-    where: { id: authReq.user.id },
+    where: { id: req.user!.id },
     select: { id: true, email: true, name: true, role: true, createdAt: true },
   })
   res.json(user)
