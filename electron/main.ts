@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell } from 'electron'
+import { app, BrowserWindow, shell, Menu } from 'electron'
 import path from 'path'
 
 const isDev = process.env.NODE_ENV === 'development'
@@ -41,7 +41,7 @@ function createWindow() {
   })
 }
 
-app.whenReady().then(createWindow)
+app.whenReady().then(() => { Menu.setApplicationMenu(null); createWindow() })
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
