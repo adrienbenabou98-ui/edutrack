@@ -211,7 +211,7 @@ export default function ClassroomDetail() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" />
             </svg>
             <span className="text-sm text-indigo-700 dark:text-indigo-300">
-              Students log in at the <strong>Class login</strong> tab using their <strong>username</strong> + class code&nbsp;
+              Students log in with their username + class code&nbsp;
               <span className="font-mono font-semibold bg-indigo-100 dark:bg-indigo-800 px-1.5 py-0.5 rounded">{classroom.classCode}</span>
             </span>
           </div>

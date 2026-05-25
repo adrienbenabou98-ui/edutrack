@@ -49,7 +49,7 @@ export default function TermIndicator() {
         {inside && week !== null ? `${activeTerm.name} — Week ${week}` : 'Between Terms'}
       </span>
       {lastAutoSwitchMessage && (
-        <div className="absolute right-0 top-8 z-50 bg-indigo-600 text-white text-xs rounded-lg px-3 py-2 shadow-lg whitespace-nowrap animate-pulse">
+        <div className="absolute right-0 top-8 z-50 bg-gray-900 text-white text-xs rounded-full px-3 py-1.5 shadow-md whitespace-nowrap">
           {lastAutoSwitchMessage}
         </div>
       )}
