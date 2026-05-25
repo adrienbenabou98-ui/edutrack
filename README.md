@@ -139,6 +139,7 @@ Demo class codes: `BIO101` (Year 10 Biology), `MATH01` (Maths)
 | `npm run build` | Production build |
 | `npm run electron:dev` | Run as desktop app (dev mode) |
 | `npm run electron:build` | Build desktop installer |
+| `npm run electron:build:prod` | Build installer pointing to live Railway URL |
 | `npx prisma db push --schema=server/prisma/schema.prisma` | Sync database schema |
 | `npx prisma studio --schema=server/prisma/schema.prisma` | Open Prisma Studio |
 
@@ -161,6 +162,19 @@ edutrack/
 │   └── prisma/            # Schema, migrations, seed
 └── electron/              # Desktop app wrapper
 ```
+
+---
+
+## Desktop App Notes
+
+The Electron wrapper loads the bundled React frontend via `file://`. A few things are wired up specifically for this:
+
+- **`vite.config.ts` sets `base: './'`** — makes asset paths relative so they resolve correctly over `file://`
+- **`electron/main.ts` loads `../../dist/index.html`** — path is relative to `electron/dist-electron/` inside the asar
+- **Preload compiles to CommonJS** — `electron/tsconfig.json` uses `"module": "CommonJS"` and the build script injects `{"type":"commonjs"}` into the output directory; Electron's sandbox does not support ESM preloads
+- **`HashRouter` in Electron** — `src/App.tsx` detects `window.electron` (exposed by the preload) and uses `HashRouter` instead of `BrowserRouter`; HTML5 history does not work over `file://`
+- **No menu bar** — `Menu.setApplicationMenu(null)` removes the default File/View/Help bar
+- **`electron/dist-electron/` is gitignored** — compiled output is regenerated on each build; if files appear modified in `git status`, run `git rm --cached electron/dist-electron/main.js electron/dist-electron/preload.js`
 
 ---
 
