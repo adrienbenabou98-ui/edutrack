@@ -4,6 +4,8 @@ import { AuthRequest } from '../middleware/auth.js'
 import { gradeSubmission } from '../services/grading.service.js'
 import { generateStudentFeedback } from '../services/ai.service.js'
 import { getStudentProgress } from '../services/analytics.service.js'
+import { createNotification } from './notification.controller.js'
+import { checkPlagiarism } from './plagiarism.controller.js'
 
 export async function submitAssignment(req: AuthRequest, res: Response) {
   const { assignmentId, answers } = req.body
@@ -17,7 +19,10 @@ export async function submitAssignment(req: AuthRequest, res: Response) {
 
   const assignment = await prisma.assignment.findUnique({
     where: { id: assignmentId },
-    include: { questions: true },
+    include: {
+      questions: true,
+      rubric: { include: { criteria: { orderBy: { order: 'asc' } } } },
+    },
   })
   if (!assignment) { res.status(404).json({ error: 'Assignment not found' }); return }
 
@@ -43,6 +48,19 @@ export async function submitAssignment(req: AuthRequest, res: Response) {
 
   res.status(201).json(submission)
 
+  // Notify student their assignment was graded (for auto-graded submissions)
+  if (totalScore !== null) {
+    createNotification(
+      req.user!.id,
+      'GRADED',
+      'Your assignment was graded',
+      `Your submission for "${assignment.title}" has been graded.`,
+    ).catch(() => {})
+  }
+
+  // Fire plagiarism check async (fire and forget)
+  checkPlagiarism(submission.id)
+
   try {
     const student = await prisma.user.findUnique({ where: { id: req.user!.id }, select: { name: true } })
     const progress = await getStudentProgress(req.user!.id)
@@ -54,6 +72,7 @@ export async function submitAssignment(req: AuthRequest, res: Response) {
       totalPoints: assignment.totalPoints,
       weakTags,
       trend: progress.trend,
+      rubricCriteria: (assignment as any).rubric?.criteria ?? undefined,
     })
     await prisma.feedback.upsert({
       where: { submissionId: submission.id },
@@ -101,4 +120,20 @@ export async function getMySubmissions(req: AuthRequest, res: Response) {
     orderBy: { submittedAt: 'desc' },
   })
   res.json(submissions)
+}
+
+export async function dismissPlagiarism(req: AuthRequest, res: Response) {
+  const submission = await prisma.submission.findUnique({
+    where: { id: req.params.id },
+    include: { assignment: { include: { classroom: true } } },
+  })
+  if (!submission) { res.status(404).json({ error: 'Not found' }); return }
+  if (req.user!.role === 'TEACHER' && submission.assignment.classroom.teacherId !== req.user!.id) {
+    res.status(403).json({ error: 'Forbidden' }); return
+  }
+  await prisma.submission.update({
+    where: { id: req.params.id },
+    data: { plagiarismFlag: false, plagiarismReport: null },
+  })
+  res.json({ ok: true })
 }

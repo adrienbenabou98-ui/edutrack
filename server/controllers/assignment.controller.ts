@@ -1,6 +1,7 @@
 import { Response } from 'express'
 import { prisma } from '../prisma/client.js'
 import { AuthRequest } from '../middleware/auth.js'
+import { createNotification } from './notification.controller.js'
 
 export async function createAssignment(req: AuthRequest, res: Response) {
   const { classroomId, title, instructions, type, dueDate, totalPoints, timeLimit, questions, subject, unitName } = req.body
@@ -55,7 +56,7 @@ export async function updateAssignment(req: AuthRequest, res: Response) {
   if (!assignment || assignment.classroom.teacherId !== req.user!.id) {
     res.status(403).json({ error: 'Forbidden' }); return
   }
-  const { title, instructions, dueDate, totalPoints, status, timeLimit } = req.body
+  const { title, instructions, dueDate, totalPoints, status, timeLimit, rubricId } = req.body
   const updated = await prisma.assignment.update({
     where: { id: req.params.id },
     data: {
@@ -65,10 +66,28 @@ export async function updateAssignment(req: AuthRequest, res: Response) {
       ...(totalPoints && { totalPoints }),
       ...(status && { status }),
       ...(timeLimit !== undefined && { timeLimit }),
+      ...(rubricId !== undefined && { rubricId: rubricId || null }),
     },
     include: { questions: true },
   })
   res.json(updated)
+
+  // Notify enrolled students when publishing
+  if (status === 'PUBLISHED' && assignment.status !== 'PUBLISHED') {
+    const enrollments = await prisma.enrollment.findMany({
+      where: { classroomId: assignment.classroomId },
+      select: { studentId: true },
+    })
+    await Promise.all(enrollments.map(e =>
+      createNotification(
+        e.studentId,
+        'NEW_ASSIGNMENT',
+        `New assignment: ${updated.title}`,
+        `A new assignment has been published in ${assignment.classroom.name}.`,
+        `/student/assignment/${updated.id}`,
+      )
+    ))
+  }
 }
 
 export async function getClassroomAssignments(req: AuthRequest, res: Response) {

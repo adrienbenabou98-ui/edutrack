@@ -7,10 +7,14 @@ import UnitsSection from '../../components/UnitsSection'
 import TermIndicator from '../../components/TermIndicator'
 import NavStudentsIcon from '../../components/NavStudentsIcon'
 import QuickGradeModal from '../../components/QuickGradeModal'
+import NotificationBell from '../../components/NotificationBell'
+import LeaderboardTab from '../../components/LeaderboardTab'
+import SeatingTab from '../../components/SeatingTab'
 
 interface Assignment {
   id: string; title: string; type: string; status: string; dueDate: string | null
   _count: { submissions: number; questions: number }
+  plagiarismFlag?: boolean; plagiarismReport?: string | null
 }
 interface Student {
   id: string; name: string; email: string | null; username: string | null
@@ -21,8 +25,11 @@ interface Classroom {
   enrollments: { student: Student }[]
   assignments: Assignment[]
 }
+interface LeaderboardEntry {
+  studentId: string; name: string; points: number; rank: number; isCurrentUser: boolean
+}
 
-type Tab = 'assignments' | 'students' | 'ext-grades' | 'units'
+type Tab = 'assignments' | 'students' | 'ext-grades' | 'units' | 'leaderboard' | 'seating'
 
 interface StudentForm { name: string; username: string; email: string; password: string; yearLevel: string }
 const emptyStudentForm = (): StudentForm => ({ name: '', username: '', email: '', password: '', yearLevel: '' })
@@ -34,6 +41,8 @@ export default function ClassroomDetail() {
   const navigate = useNavigate()
   const [classroom, setClassroom] = useState<Classroom | null>(null)
   const [tab, setTab] = useState<Tab>('assignments')
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [plagiarismModal, setPlagiarismModal] = useState<{ report: string; submissionId: string } | null>(null)
 
   const { boundaries, loaded, load } = useBoundaryStore()
   useEffect(() => { if (!loaded) load() }, [loaded])
@@ -41,6 +50,19 @@ export default function ClassroomDetail() {
   useEffect(() => {
     api.get(`/classrooms/${id}`).then(r => setClassroom(r.data))
   }, [id])
+
+  useEffect(() => {
+    if (tab === 'leaderboard' && id) {
+      api.get(`/classrooms/${id}/leaderboard`).then(r => setLeaderboard(r.data)).catch(() => {})
+    }
+  }, [tab, id])
+
+  async function dismissPlagiarism(submissionId: string) {
+    await api.put(`/submissions/${submissionId}/dismiss-plagiarism`)
+    setPlagiarismModal(null)
+    // Refresh classroom data to update flag
+    api.get(`/classrooms/${id}`).then(r => setClassroom(r.data))
+  }
 
   // Student management state
   const [quickGrade, setQuickGrade] = useState<{ studentId: string; studentName: string } | null>(null)
@@ -67,6 +89,8 @@ export default function ClassroomDetail() {
     ['students', `Students (${classroom.enrollments.length})`],
     ['ext-grades', 'Assignment Grades'],
     ['units', 'Units'],
+    ['leaderboard', 'Leaderboard'],
+    ['seating', 'Seating'],
   ]
 
   async function handleStudentSave(e: React.FormEvent) {
@@ -139,6 +163,7 @@ export default function ClassroomDetail() {
         <div className="flex items-center gap-3">
           <NavStudentsIcon />
           <TermIndicator />
+          <NotificationBell accent="indigo" />
         </div>
       </nav>
 
@@ -233,9 +258,19 @@ export default function ClassroomDetail() {
                       {a.dueDate && ` · Due ${new Date(a.dueDate).toLocaleDateString()}`}
                     </p>
                   </div>
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                    a.status === 'PUBLISHED' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
-                  }`}>{a.status}</span>
+                  <div className="flex items-center gap-2">
+                    {(a as any).plagiarismFlag && (
+                      <button
+                        onClick={() => setPlagiarismModal({ report: (a as any).plagiarismReport ?? 'No details', submissionId: a.id })}
+                        className="text-xs px-2 py-1 rounded-full font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 hover:bg-red-200"
+                      >
+                        ⚠ Plagiarism flag
+                      </button>
+                    )}
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                      a.status === 'PUBLISHED' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                    }`}>{a.status}</span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -319,7 +354,34 @@ export default function ClassroomDetail() {
         {tab === 'units' && (
           <UnitsSection classroomId={classroom.id} students={students.map(s => ({ id: s.id, name: s.name }))} boundaries={boundaries} />
         )}
+
+        {tab === 'leaderboard' && (
+          <LeaderboardTab entries={leaderboard} isTeacher />
+        )}
+
+        {tab === 'seating' && (
+          <SeatingTab classroomId={classroom.id} students={students} />
+        )}
       </main>
+
+      {/* Plagiarism report modal */}
+      {plagiarismModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Plagiarism Report</h2>
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">{plagiarismModal.report}</p>
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setPlagiarismModal(null)} className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">Close</button>
+              <button
+                onClick={() => dismissPlagiarism(plagiarismModal.submissionId)}
+                className="px-4 py-2 text-sm bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+              >
+                Dismiss Flag
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {quickGrade && (
         <QuickGradeModal
