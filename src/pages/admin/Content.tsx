@@ -206,7 +206,7 @@ export default function Content() {
             </div>
             <div className="flex justify-end gap-2 mt-4">
               <button onClick={() => setGradeModal(null)} className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">Cancel</button>
-              <button onClick={handleOverrideGrade} disabled={saving || !gradeValue} className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50">
+              <button onClick={handleOverrideGrade} disabled={saving || !gradeValue} className="btn-3d-indigo disabled:opacity-50">
                 {saving ? 'Saving…' : 'Apply'}
               </button>
             </div>

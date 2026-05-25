@@ -177,7 +177,7 @@ export default function NewAssignment() {
             Save as Draft
           </button>
           <button onClick={() => handleSubmit('PUBLISHED')} disabled={saving || !title}
-            className="px-5 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50">
+            className="btn-3d-indigo px-5 disabled:opacity-50">
             Publish
           </button>
         </div>

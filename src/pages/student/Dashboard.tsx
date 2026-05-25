@@ -76,7 +76,7 @@ export default function StudentDashboard() {
               <input autoFocus value={classCode} onChange={e => setClassCode(e.target.value.toUpperCase())}
                 className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-teal-500"
                 placeholder="ABC123" maxLength={6} required />
-              <button type="submit" className="bg-teal-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Join</button>
+              <button type="submit" className="btn-3d-teal">Join</button>
               <button type="button" onClick={() => setShowJoin(false)} className="text-gray-500 px-3 text-sm">Cancel</button>
             </div>
             {joinError && <p className="text-red-500 text-sm mt-2">{joinError}</p>}

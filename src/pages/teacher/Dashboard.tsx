@@ -81,7 +81,7 @@ export default function TeacherDashboard() {
           </div>
           <button
             onClick={() => setShowCreate(true)}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
+            className="btn-3d-indigo"
           >
             + New Classroom
           </button>
@@ -117,7 +117,7 @@ export default function TeacherDashboard() {
             )}
             <div className="flex gap-2 justify-end">
               <button type="button" onClick={() => setShowCreate(false)} className="text-gray-500 dark:text-gray-400 px-3 py-2 text-sm">Cancel</button>
-              <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Create</button>
+              <button type="submit" className="btn-3d-indigo">Create</button>
             </div>
           </form>
         )}

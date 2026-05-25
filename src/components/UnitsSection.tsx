@@ -207,7 +207,7 @@ export default function UnitsSection({ classroomId, students, boundaries }: Prop
     <div>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-base font-semibold text-gray-900 dark:text-white">Units</h2>
-        <button onClick={() => setShowAddUnit(true)} className="text-sm bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700">+ Add Unit</button>
+        <button onClick={() => setShowAddUnit(true)} className="btn-3d-indigo px-3 py-1.5">+ Add Unit</button>
       </div>
 
       {showAddUnit && (
@@ -215,7 +215,7 @@ export default function UnitsSection({ classroomId, students, boundaries }: Prop
           <input autoFocus value={newUnitName} onChange={e => setNewUnitName(e.target.value)} required
             placeholder="Unit name (e.g. Fractions)"
             className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-          <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm">Create</button>
+          <button type="submit" className="btn-3d-indigo">Create</button>
           <button type="button" onClick={() => setShowAddUnit(false)} className="text-gray-500 px-3 text-sm">Cancel</button>
         </form>
       )}

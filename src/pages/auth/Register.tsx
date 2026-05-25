@@ -137,8 +137,8 @@ export default function Register() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full text-white rounded-lg py-2 text-sm font-medium disabled:opacity-50 transition-colors ${
-              form.role === 'TEACHER' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-teal-600 hover:bg-teal-700'
+            className={`w-full disabled:opacity-50 ${
+              form.role === 'TEACHER' ? 'btn-3d-indigo' : 'btn-3d-teal'
             }`}
           >
             {loading ? 'Creating account…' : 'Create account'}

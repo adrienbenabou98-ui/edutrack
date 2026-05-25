@@ -105,7 +105,7 @@ export default function Analytics({ classroomId: propId }: { classroomId?: strin
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-gray-900">AI Class Insight</h3>
           <button onClick={loadInsight} disabled={loadingInsight}
-            className="text-sm bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 disabled:opacity-50">
+            className="btn-3d-indigo px-3 py-1.5 disabled:opacity-50">
             {loadingInsight ? 'Generating…' : 'Generate insight'}
           </button>
         </div>
@@ -126,7 +126,7 @@ export default function Analytics({ classroomId: propId }: { classroomId?: strin
             className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="e.g. Which students need the most support this week?" />
           <button type="submit" disabled={loadingAnswer}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50">
+            className="btn-3d-indigo disabled:opacity-50">
             {loadingAnswer ? '…' : 'Ask'}
           </button>
         </form>

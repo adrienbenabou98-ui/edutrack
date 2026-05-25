@@ -144,7 +144,7 @@ export default function QuickGradeModal({ studentId, studentName, classroomId, o
               </div>
               <div className="flex gap-2 justify-end pt-1">
                 <button type="button" onClick={() => setShowNew(false)} className="px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400">Cancel</button>
-                <button type="submit" disabled={creating} className="px-4 py-1.5 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50">
+                <button type="submit" disabled={creating} className="btn-3d-indigo py-1.5 disabled:opacity-50">
                   {creating ? 'Adding…' : 'Add'}
                 </button>
               </div>

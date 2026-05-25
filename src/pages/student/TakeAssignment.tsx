@@ -56,7 +56,7 @@ export default function TakeAssignment() {
             {result.totalScore >= 90 ? 'Excellent work!' : result.totalScore >= 70 ? 'Good job!' : 'Keep practising — you\'ll get there!'}
           </p>
           <button onClick={() => navigate('/student')}
-            className="bg-teal-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-teal-700">
+            className="btn-3d-teal px-6">
             Back to Dashboard
           </button>
         </div>
@@ -117,7 +117,7 @@ export default function TakeAssignment() {
           ))}
           <div className="flex justify-end pb-8">
             <button type="submit" disabled={submitting}
-              className="bg-teal-600 text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-teal-700 disabled:opacity-50">
+              className="btn-3d-teal px-6 py-2.5 disabled:opacity-50">
               {submitting ? 'Submitting…' : 'Submit Assignment'}
             </button>
           </div>

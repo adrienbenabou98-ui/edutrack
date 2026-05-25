@@ -143,7 +143,7 @@ export default function ExternalGradesSection({ classroomId, students, boundarie
           )}
           <button
             onClick={() => { setShowAdd(true); setEditId(null); setAddForm({ title: '', description: '', date: new Date().toISOString().slice(0, 10), totalMarks: '100', weight: '0' }) }}
-            className="text-sm bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700"
+            className="btn-3d-indigo px-3 py-1.5"
           >+ Add Assignment</button>
         </div>
       </div>
@@ -271,7 +271,7 @@ export default function ExternalGradesSection({ classroomId, students, boundarie
                 <button type="button" onClick={() => setShowAdd(false)}
                   className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:text-white dark:hover:bg-gray-700">Cancel</button>
                 <button type="submit"
-                  className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">{editId ? 'Save' : 'Create'}</button>
+                  className="btn-3d-indigo">{editId ? 'Save' : 'Create'}</button>
               </div>
             </form>
           </div>
@@ -300,7 +300,7 @@ export default function ExternalGradesSection({ classroomId, students, boundarie
             </div>
             <div className="flex gap-3 justify-end mt-4">
               <button onClick={() => setCurveFor(null)} className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg dark:text-white">Cancel</button>
-              <button onClick={applyCurve} disabled={applying} className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50">
+              <button onClick={applyCurve} disabled={applying} className="btn-3d-indigo disabled:opacity-50">
                 {applying ? 'Applying…' : 'Apply'}
               </button>
             </div>

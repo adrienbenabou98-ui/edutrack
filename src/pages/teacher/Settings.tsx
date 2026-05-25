@@ -144,7 +144,7 @@ export default function Settings() {
             )}
             <div className="flex justify-end mt-6">
               <button onClick={handleSave} disabled={saving}
-                className="px-5 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50">
+                className="btn-3d-indigo px-5 disabled:opacity-50">
                 {saved ? 'Saved!' : saving ? 'Saving…' : 'Save changes'}
               </button>
             </div>
@@ -165,7 +165,7 @@ export default function Settings() {
                 <p className="text-sm text-gray-400 mt-1">Define your school terms. The active term is shown in every page header.</p>
               </div>
               <button onClick={() => { setShowTermModal(true); setEditTermId(null); setTermForm(emptyTermModal()) }}
-                className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700">Add Term</button>
+                className="btn-3d-indigo">Add Term</button>
             </div>
 
             {!termsLoaded ? <div className="text-center py-8 text-gray-400">Loading…</div> : terms.length === 0 ? (
@@ -236,7 +236,7 @@ export default function Settings() {
                 <button type="button" onClick={() => setShowTermModal(false)}
                   className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:text-white dark:hover:bg-gray-700">Cancel</button>
                 <button type="submit" disabled={termSaving}
-                  className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50">{termSaving ? 'Saving…' : 'Save'}</button>
+                  className="btn-3d-indigo disabled:opacity-50">{termSaving ? 'Saving…' : 'Save'}</button>
               </div>
             </form>
           </div>
