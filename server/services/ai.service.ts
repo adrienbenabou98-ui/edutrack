@@ -9,19 +9,23 @@ interface StudentFeedbackInput {
   totalPoints: number
   weakTags: string[]
   trend: 'improving' | 'steady' | 'declining'
+  rubricCriteria?: { name: string; description?: string | null; maxPoints: number }[]
 }
 
 export async function generateStudentFeedback(input: StudentFeedbackInput): Promise<string> {
-  const { firstName, assignmentTitle, score, totalPoints, weakTags, trend } = input
+  const { firstName, assignmentTitle, score, totalPoints, weakTags, trend, rubricCriteria } = input
+  const rubricSection = rubricCriteria?.length
+    ? `\nRubric criteria:\n${rubricCriteria.map(c => `- ${c.name} (${c.maxPoints} pts)${c.description ? ': ' + c.description : ''}`).join('\n')}`
+    : ''
   const prompt = `You are a supportive teacher giving feedback to a student.
 
 Student: ${firstName}
 Assignment: ${assignmentTitle}
 Score: ${score}% (out of ${totalPoints} points)
 Trend: ${trend}
-Weak areas: ${weakTags.length > 0 ? weakTags.join(', ') : 'none identified'}
+Weak areas: ${weakTags.length > 0 ? weakTags.join(', ') : 'none identified'}${rubricSection}
 
-Write 2-3 sentences of personalised encouragement and one specific improvement tip based on their weak areas. Be warm, specific, and actionable. Do not use the student's last name. Do not mention their score directly.`
+Write 2-3 sentences of personalised encouragement and one specific improvement tip based on their weak areas${rubricCriteria?.length ? ' and rubric criteria' : ''}. Be warm, specific, and actionable. Do not use the student's last name. Do not mention their score directly.`
 
   const message = await client.messages.create({
     model: 'claude-sonnet-4-20250514',

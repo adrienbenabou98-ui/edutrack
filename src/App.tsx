@@ -13,6 +13,7 @@ import GradeTracker from './pages/teacher/GradeTracker'
 import StudentGradeDetail from './pages/teacher/StudentGradeDetail'
 import TeacherSettings from './pages/teacher/Settings'
 import TeacherStudents from './pages/teacher/Students'
+import Rubrics from './pages/teacher/Rubrics'
 import MessagesPage from './pages/Messages'
 import AdminUsers from './pages/admin/Users'
 import AdminClassrooms from './pages/admin/Classrooms'
@@ -47,6 +48,7 @@ export default function App() {
         <Route path="/teacher/grades/:studentId" element={<ProtectedRoute role="TEACHER"><StudentGradeDetail /></ProtectedRoute>} />
         <Route path="/teacher/settings" element={<ProtectedRoute role="TEACHER"><TeacherSettings /></ProtectedRoute>} />
         <Route path="/teacher/students" element={<ProtectedRoute role="TEACHER"><TeacherStudents /></ProtectedRoute>} />
+        <Route path="/teacher/rubrics" element={<ProtectedRoute role="TEACHER"><Rubrics /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute role="ADMIN"><AdminUsers /></ProtectedRoute>} />
         <Route path="/admin/users" element={<ProtectedRoute role="ADMIN"><AdminUsers /></ProtectedRoute>} />
         <Route path="/admin/classrooms" element={<ProtectedRoute role="ADMIN"><AdminClassrooms /></ProtectedRoute>} />

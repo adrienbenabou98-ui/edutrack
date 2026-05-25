@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../../api/client'
 
@@ -6,6 +6,10 @@ type QuestionType = 'MULTIPLE_CHOICE' | 'TRUE_FALSE' | 'SHORT_ANSWER' | 'LONG_AN
 
 interface Question {
   text: string; type: QuestionType; options: string[]; correctAnswer: string; tags: string; points: number
+}
+
+interface Rubric {
+  id: string; name: string
 }
 
 const emptyQuestion = (): Question => ({
@@ -21,8 +25,14 @@ export default function NewAssignment() {
   const [dueDate, setDueDate] = useState('')
   const [subject, setSubject] = useState('')
   const [unitName, setUnitName] = useState('')
+  const [rubricId, setRubricId] = useState('')
+  const [rubrics, setRubrics] = useState<Rubric[]>([])
   const [questions, setQuestions] = useState<Question[]>([emptyQuestion()])
   const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    api.get('/rubrics').then(r => setRubrics(r.data)).catch(() => {})
+  }, [])
 
   function updateQuestion(i: number, field: keyof Question, value: any) {
     setQuestions(qs => qs.map((q, idx) => idx === i ? { ...q, [field]: value } : q))
@@ -44,6 +54,7 @@ export default function NewAssignment() {
         dueDate: dueDate || null,
         subject: subject || null,
         unitName: unitName || null,
+        rubricId: rubricId || null,
         questions: questions.map(q => ({
           text: q.text,
           type: q.type,
@@ -111,6 +122,16 @@ export default function NewAssignment() {
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             </div>
           </div>
+          {rubrics.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Rubric <span className="font-normal text-gray-400">(optional)</span></label>
+              <select value={rubricId} onChange={e => setRubricId(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="">No rubric</option>
+                {rubrics.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+              </select>
+            </div>
+          )}
         </div>
 
         <div className="space-y-4">
