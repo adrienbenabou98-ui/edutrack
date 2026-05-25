@@ -160,7 +160,7 @@ export default function ClassroomDetail() {
                   Analytics
                 </Link>
                 <Link to={`/teacher/classroom/${id}/new-assignment`}
-                  className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700">
+                  className="btn-3d-indigo">
                   + New Assignment
                 </Link>
               </>
@@ -175,7 +175,7 @@ export default function ClassroomDetail() {
                 </button>
                 <button
                   onClick={() => { setShowStudentModal(true); setEditStudentId(null); setStudentForm(emptyStudentForm()); setStudentError('') }}
-                  className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700"
+                  className="btn-3d-indigo"
                 >
                   + Add Student
                 </button>
@@ -197,7 +197,7 @@ export default function ClassroomDetail() {
             </div>
             <div className="flex gap-2">
               <button type="button" onClick={() => setShowSettings(false)} className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">Cancel</button>
-              <button type="submit" disabled={settingsSaving} className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50">
+              <button type="submit" disabled={settingsSaving} className="btn-3d-indigo disabled:opacity-50">
                 {settingsSaving ? 'Saving…' : 'Save'}
               </button>
             </div>
@@ -211,7 +211,7 @@ export default function ClassroomDetail() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" />
             </svg>
             <span className="text-sm text-indigo-700 dark:text-indigo-300">
-              Students log in at the <strong>Class login</strong> tab using their <strong>username</strong> + class code&nbsp;
+              Students log in with their username + class code&nbsp;
               <span className="font-mono font-semibold bg-indigo-100 dark:bg-indigo-800 px-1.5 py-0.5 rounded">{classroom.classCode}</span>
             </span>
           </div>
@@ -378,7 +378,7 @@ export default function ClassroomDetail() {
                 <button type="button" onClick={() => setShowStudentModal(false)}
                   className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:text-white dark:hover:bg-gray-700">Cancel</button>
                 <button type="submit" disabled={studentSaving}
-                  className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50">
+                  className="btn-3d-indigo disabled:opacity-50">
                   {studentSaving ? 'Saving…' : editStudentId ? 'Save' : 'Add Student'}
                 </button>
               </div>

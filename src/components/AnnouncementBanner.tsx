@@ -25,7 +25,7 @@ export default function AnnouncementBanner() {
   return (
     <div className="space-y-1">
       {visible.map(a => (
-        <div key={a.id} className="flex items-center gap-3 bg-indigo-600 text-white px-4 py-2.5 text-sm">
+        <div key={a.id} className="flex items-center gap-3 bg-indigo-600 text-white mx-4 mt-3 px-4 py-2.5 text-sm rounded-xl shadow-sm">
           <span className="flex-1">{a.message}</span>
           <button onClick={() => dismiss(a.id)} className="text-indigo-200 hover:text-white text-lg leading-none">×</button>
         </div>

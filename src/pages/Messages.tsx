@@ -90,7 +90,7 @@ export default function Messages() {
               placeholder="Write your message…" required />
             <div className="flex justify-end">
               <button type="submit" disabled={sending || !body.trim()}
-                className={`px-4 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-50 ${user?.role === 'TEACHER' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-teal-600 hover:bg-teal-700'}`}>
+                className={`disabled:opacity-50 ${user?.role === 'TEACHER' ? 'btn-3d-indigo' : 'btn-3d-teal'}`}>
                 {sending ? 'Sending…' : 'Send'}
               </button>
             </div>

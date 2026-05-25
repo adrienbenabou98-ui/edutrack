@@ -81,7 +81,7 @@ export default function TeacherDashboard() {
           </div>
           <button
             onClick={() => setShowCreate(true)}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
+            className="btn-3d-indigo"
           >
             + New Classroom
           </button>
@@ -117,7 +117,7 @@ export default function TeacherDashboard() {
             )}
             <div className="flex gap-2 justify-end">
               <button type="button" onClick={() => setShowCreate(false)} className="text-gray-500 dark:text-gray-400 px-3 py-2 text-sm">Cancel</button>
-              <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Create</button>
+              <button type="submit" className="btn-3d-indigo">Create</button>
             </div>
           </form>
         )}
@@ -132,16 +132,31 @@ export default function TeacherDashboard() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {classrooms.map(c => (
-              <Link key={c.id} to={`/teacher/classroom/${c.id}`}
-                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-sm transition-all">
+              <Link
+                key={c.id}
+                to={`/teacher/classroom/${c.id}`}
+                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-sm transition-all"
+              >
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="font-semibold text-gray-900 dark:text-white">{c.name}</h3>
-                  {c.yearLevel && <span className="text-xs px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 font-medium">Yr {c.yearLevel}</span>}
+                  <h3 className="text-[17px] font-semibold text-gray-900 dark:text-white tracking-tight">{c.name}</h3>
+                  {c.yearLevel && (
+                    <span className="text-xs px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 font-medium">
+                      Yr {c.yearLevel}
+                    </span>
+                  )}
                 </div>
-                <p className="text-xs text-gray-400 mt-1 font-mono">Code: {c.classCode}</p>
-                <div className="flex gap-4 mt-4 text-sm text-gray-500 dark:text-gray-400">
-                  <span>{c._count.enrollments} students</span>
-                  <span>{c._count.assignments} assignments</span>
+                <p className="mt-1.5 font-mono text-[11px] font-medium tracking-[0.12em] uppercase text-gray-400">
+                  {c.classCode}
+                </p>
+                <div className="flex gap-6 mt-4 items-baseline">
+                  <div className="flex items-baseline gap-1.5">
+                    <b className="text-lg font-semibold text-gray-900 dark:text-white tabular-nums leading-none">{c._count.enrollments}</b>
+                    <span className="text-xs text-gray-500">students</span>
+                  </div>
+                  <div className="flex items-baseline gap-1.5">
+                    <b className="text-lg font-semibold text-gray-900 dark:text-white tabular-nums leading-none">{c._count.assignments}</b>
+                    <span className="text-xs text-gray-500">assignments</span>
+                  </div>
                 </div>
               </Link>
             ))}

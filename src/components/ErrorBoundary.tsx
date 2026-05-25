@@ -19,7 +19,7 @@ export default class ErrorBoundary extends Component<Props, State> {
             <p className="text-2xl mb-2">Something went wrong</p>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">{this.state.message}</p>
             <button onClick={() => window.location.reload()}
-              className="bg-indigo-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700">
+              className="btn-3d-indigo px-5">
               Reload page
             </button>
           </div>

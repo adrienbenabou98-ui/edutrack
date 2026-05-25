@@ -168,7 +168,7 @@ export default function Users() {
           </div>
           <button
             onClick={openCreate}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
+            className="btn-3d-indigo"
           >
             + Create User
           </button>
@@ -319,7 +319,7 @@ export default function Users() {
                 <code className="flex-1 bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm font-mono text-gray-900 dark:text-white">{newPassword}</code>
                 <button
                   onClick={() => navigator.clipboard.writeText(newPassword)}
-                  className="px-3 py-2 text-xs bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                  className="btn-3d-indigo px-3 text-xs"
                 >Copy</button>
               </div>
               <p className="text-xs text-amber-600 dark:text-amber-400">Share this with the user — it won't be shown again.</p>
@@ -332,7 +332,7 @@ export default function Users() {
               {newPassword ? 'Close' : 'Cancel'}
             </button>
             {!newPassword && (
-              <button onClick={handleReset} disabled={saving} className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50">
+              <button onClick={handleReset} disabled={saving} className="btn-3d-indigo disabled:opacity-50">
                 {saving ? 'Generating…' : 'Generate'}
               </button>
             )}
@@ -427,7 +427,7 @@ function ModalFooter({ onClose, onConfirm, confirmLabel, saving }: {
   return (
     <div className="flex justify-end gap-2 mt-4">
       <button onClick={onClose} className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">Cancel</button>
-      <button onClick={onConfirm} disabled={saving} className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50">
+      <button onClick={onConfirm} disabled={saving} className="btn-3d-indigo disabled:opacity-50">
         {saving ? 'Saving…' : confirmLabel}
       </button>
     </div>

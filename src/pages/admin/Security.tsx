@@ -150,7 +150,7 @@ export default function Security() {
                   placeholder="Paste a user ID…"
                   className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                 <button onClick={loadHistory} disabled={historyLoading || !historyUserId.trim()}
-                  className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50">
+                  className="btn-3d-indigo disabled:opacity-50">
                   {historyLoading ? 'Loading…' : 'Look up'}
                 </button>
               </div>
