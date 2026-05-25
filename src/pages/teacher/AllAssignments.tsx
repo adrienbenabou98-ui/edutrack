@@ -30,7 +30,7 @@ export default function TeacherAllAssignments() {
   useEffect(() => {
     Promise.all([
       api.get('/classrooms'),
-      api.get('/assignments'),
+      api.get('/assignments/all'),
     ]).then(([cr, ar]) => {
       setClassrooms(cr.data)
       setAssignments(ar.data)

@@ -45,7 +45,15 @@ export async function getAssignment(req: AuthRequest, res: Response) {
     include: { questions: true, classroom: true },
   })
   if (!assignment) { res.status(404).json({ error: 'Not found' }); return }
-  res.json(assignment)
+
+  const user = req.user!
+  if (user.role === 'ADMIN') { res.json(assignment); return }
+  if (user.role === 'TEACHER' && assignment.classroom.teacherId === user.id) { res.json(assignment); return }
+  if (user.role === 'STUDENT') {
+    const enrolled = await prisma.enrollment.findFirst({ where: { classroomId: assignment.classroomId, studentId: user.id } })
+    if (enrolled) { res.json(assignment); return }
+  }
+  res.status(403).json({ error: 'Forbidden' })
 }
 
 export async function updateAssignment(req: AuthRequest, res: Response) {
@@ -92,9 +100,40 @@ export async function updateAssignment(req: AuthRequest, res: Response) {
 
 export async function getClassroomAssignments(req: AuthRequest, res: Response) {
   const { classroomId } = req.params
+  const user = req.user!
+
+  const classroom = await prisma.classroom.findUnique({ where: { id: classroomId } })
+  if (!classroom) { res.status(404).json({ error: 'Not found' }); return }
+
+  if (user.role !== 'ADMIN' && classroom.teacherId !== user.id) {
+    if (user.role === 'STUDENT') {
+      const enrolled = await prisma.enrollment.findFirst({ where: { classroomId, studentId: user.id } })
+      if (!enrolled) { res.status(403).json({ error: 'Forbidden' }); return }
+    } else {
+      res.status(403).json({ error: 'Forbidden' }); return
+    }
+  }
+
   const assignments = await prisma.assignment.findMany({
     where: { classroomId },
     include: { _count: { select: { submissions: true, questions: true } } },
+    orderBy: { createdAt: 'desc' },
+  })
+  res.json(assignments)
+}
+
+export async function getAllTeacherAssignments(req: AuthRequest, res: Response) {
+  const classrooms = await prisma.classroom.findMany({
+    where: { teacherId: req.user!.id },
+    select: { id: true },
+  })
+  const classroomIds = classrooms.map(c => c.id)
+  const assignments = await prisma.assignment.findMany({
+    where: { classroomId: { in: classroomIds } },
+    include: {
+      classroom: { select: { id: true, name: true } },
+      _count: { select: { submissions: true, questions: true } },
+    },
     orderBy: { createdAt: 'desc' },
   })
   res.json(assignments)

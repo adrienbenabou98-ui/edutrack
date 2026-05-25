@@ -32,6 +32,8 @@ All versions connect to the same live server. Create an account on first use or 
 - Auto-grading for objective questions
 - AI-generated feedback on student submissions (powered by Claude)
 - Rubric builder — create marking rubrics with drag-to-reorder criteria; attach to assignments so AI feedback references specific criteria
+- Assignments overview — `/teacher/assignments` lists all assignments across every class with a class filter and submission counts
+- Student rankings — `/teacher/rankings` shows the full points leaderboard for every class with real student names and medal icons
 - Grade Tracker — per-student breakdown by subject and unit, with grade curving
 - Lesson understanding tracker — record per-student understanding each lesson using fully customisable levels (drag to reorder, colour picker, absent toggle)
 - Seating chart — drag-and-drop classroom seating grid, assign students to desks
@@ -51,6 +53,8 @@ All versions connect to the same live server. Create an account on first use or 
 - View AI feedback on submissions
 - Grade goals — set a target % per class with a live progress bar
 - Leaderboard — see your rank in each class (anonymised peer entries)
+- Assignments page — `/student/assignments` shows all to-do and completed assignments in one place
+- Rankings page — `/student/rankings` shows per-class leaderboards with medal icons and your position highlighted
 - Progress view across subjects
 - In-app notifications — alerts for new assignments and graded work
 
