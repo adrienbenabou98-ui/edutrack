@@ -1,8 +1,6 @@
 import { app, BrowserWindow, shell } from 'electron'
 import path from 'path'
-import { fileURLToPath } from 'url'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const isDev = process.env.NODE_ENV === 'development'
 
 function getIconPath() {
@@ -32,7 +30,7 @@ function createWindow() {
     win.loadURL('http://localhost:5173')
     win.webContents.openDevTools()
   } else {
-    win.loadFile(path.join(__dirname, '../dist/index.html'))
+    win.loadFile(path.join(__dirname, '../../dist/index.html'))
   }
 
   win.once('ready-to-show', () => win.show())

@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from './store/auth.store'
 import ProtectedRoute from './components/ProtectedRoute'
 import ErrorBoundary from './components/ErrorBoundary'
@@ -30,9 +30,11 @@ export default function App() {
 
   useEffect(() => { loadUser() }, [])
 
+  const Router = typeof window !== 'undefined' && (window as any).electron ? HashRouter : BrowserRouter
+
   return (
     <ErrorBoundary>
-    <BrowserRouter>
+    <Router>
       <AnnouncementBanner />
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -58,7 +60,7 @@ export default function App() {
         <Route path="/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
     </ErrorBoundary>
   )
 }
