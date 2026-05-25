@@ -31,20 +31,28 @@ All versions connect to the same live server. Create an account on first use or 
 - Build assignments, quizzes, and exams with multiple question types (multiple choice, true/false, short answer, long answer)
 - Auto-grading for objective questions
 - AI-generated feedback on student submissions (powered by Claude)
+- Rubric builder — create marking rubrics with drag-to-reorder criteria; attach to assignments so AI feedback references specific criteria
 - Grade Tracker — per-student breakdown by subject and unit, with grade curving
 - Lesson understanding tracker — record per-student understanding each lesson using fully customisable levels (drag to reorder, colour picker, absent toggle)
+- Seating chart — drag-and-drop classroom seating grid, assign students to desks
+- Leaderboard — points-based class ranking visible to teacher and students
 - Analytics dashboard with charts
 - Term management and grade boundaries (customisable tiers)
 - Teacher notes per student (strengths, areas for improvement)
 - PDF export of class progress reports
 - CSV export of grades
 - In-app messaging
+- In-app notifications — bell icon with unread badge; alerts for new assignments, graded submissions, and announcements
+- Plagiarism detection — auto-runs on every long-answer submission using Claude; flags suspicious matches and notifies the teacher
 
 ### Student
 - Dashboard showing enrolled classrooms and upcoming assignments
 - Submit assignments and receive auto-graded results
 - View AI feedback on submissions
+- Grade goals — set a target % per class with a live progress bar
+- Leaderboard — see your rank in each class (anonymised peer entries)
 - Progress view across subjects
+- In-app notifications — alerts for new assignments and graded work
 
 ### Desktop
 - Electron wrapper for a native desktop experience on Windows, Mac, and Linux
