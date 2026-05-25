@@ -1,21 +1,38 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Background -->
-  <rect width="512" height="512" rx="100" fill="#4f46e5"/>
+  
+  <rect width="512" height="512" rx="100" fill="#2563eb"></rect>
 
-  <!-- Magnifying glass handle -->
-  <line x1="310" y1="350" x2="450" y2="458" stroke="white" stroke-width="56" stroke-linecap="round"/>
+  
 
-  <!-- Magnifying glass ring -->
-  <circle cx="200" cy="280" r="145" fill="none" stroke="white" stroke-width="52"/>
+  
+  <g transform="rotate(38 360 412)">
+    <rect x="350" y="386" width="170" height="50" rx="25" fill="#14b8a6" stroke="#0f172a" stroke-width="6"></rect>
+    <rect x="470" y="386" width="50" height="50" rx="25" fill="#0d9488" stroke="#0f172a" stroke-width="6"></rect>
+  </g>
 
-  <!-- Graduation cap board (mortar board) centered on lens -->
-  <polygon points="200,96 400,162 200,228 0,162" fill="#fbbf24"/>
+  
+  <circle cx="256" cy="340" r="128" fill="#ffffff" stroke="#0f172a" stroke-width="8"></circle>
 
-  <!-- Cap crown (the 3D top of the cap) -->
-  <rect x="162" y="136" width="76" height="54" rx="8" fill="#f59e0b"/>
+  
+  <circle cx="256" cy="340" r="104" fill="#dbeafe"></circle>
 
-  <!-- Tassel cord -->
-  <line x1="400" y1="162" x2="400" y2="242" stroke="#fbbf24" stroke-width="9"/>
-  <!-- Tassel bob -->
-  <circle cx="400" cy="260" r="18" fill="#fbbf24"/>
+  
+  <path d="M 200 290 Q 178 330, 200 370" stroke="#ffffff" stroke-width="16" stroke-linecap="round" fill="none"></path>
+
+  
+
+  
+  <polygon points="98,194 256,268 414,194 414,216 256,290 98,216" fill="#0f172a" stroke="#0f172a" stroke-width="8" stroke-linejoin="round"></polygon>
+
+  
+  <polygon points="256,120 414,194 256,268 98,194" fill="#1e293b" stroke="#0f172a" stroke-width="8" stroke-linejoin="round"></polygon>
+
+  
+  <circle cx="256" cy="194" r="14" fill="#fbbf24" stroke="#0f172a" stroke-width="5"></circle>
+
+  
+  <path d="M 256 194 C 332 204, 408 218, 420 236&#xA;           C 422 280, 422 322, 422 348" stroke="#fbbf24" stroke-width="10" fill="none" stroke-linecap="round"></path>
+
+  
+  <path d="M 422 348&#xA;           Q 402 352, 402 372&#xA;           Q 402 400, 422 408&#xA;           Q 442 400, 442 372&#xA;           Q 442 352, 422 348 Z" fill="#fbbf24" stroke="#0f172a" stroke-width="5"></path>
 </svg>
