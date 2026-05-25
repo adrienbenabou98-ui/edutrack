@@ -18,6 +18,8 @@ interface Submission {
   totalScore: number | null
   curvedScore: number | null
   status: string
+  plagiarismFlag: boolean
+  plagiarismReport: string | null
   student: { id: string; name: string; email: string | null }
 }
 
@@ -32,6 +34,7 @@ export default function Content() {
   const [gradeNote, setGradeNote] = useState('')
   const [saving, setSaving] = useState(false)
   const [deleteAssignId, setDeleteAssignId] = useState<string | null>(null)
+  const [plagiarismModal, setPlagiarismModal] = useState<Submission | null>(null)
 
   async function load() {
     setLoading(true)
@@ -83,6 +86,18 @@ export default function Content() {
   async function handleDeleteSubmission(assignmentId: string, submissionId: string) {
     await api.delete(`/admin/content/submissions/${submissionId}`)
     setSubmissions(s => ({ ...s, [assignmentId]: s[assignmentId].filter(sub => sub.id !== submissionId) }))
+  }
+
+  async function handleDismissPlagiarism(sub: Submission) {
+    await api.put(`/submissions/${sub.id}/dismiss-plagiarism`)
+    setSubmissions(s => ({
+      ...s,
+      ...Object.fromEntries(Object.entries(s).map(([aid, subs]) => [
+        aid,
+        subs.map(item => item.id === sub.id ? { ...item, plagiarismFlag: false, plagiarismReport: null } : item),
+      ])),
+    }))
+    setPlagiarismModal(null)
   }
 
   const TYPE_COLOURS: Record<string, string> = {
@@ -160,7 +175,15 @@ export default function Content() {
                               {submissions[a.id].map(sub => (
                                 <div key={sub.id} className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-lg px-3 py-2 border border-gray-200 dark:border-gray-700">
                                   <div>
-                                    <p className="text-xs font-medium text-gray-900 dark:text-white">{sub.student.name}</p>
+                                    <div className="flex items-center gap-2">
+                                      <p className="text-xs font-medium text-gray-900 dark:text-white">{sub.student.name}</p>
+                                      {sub.plagiarismFlag && (
+                                        <button
+                                          onClick={() => setPlagiarismModal(sub)}
+                                          className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 font-medium hover:bg-red-200"
+                                        >⚠ Plagiarism</button>
+                                      )}
+                                    </div>
                                     <p className="text-xs text-gray-400">
                                       Score: {sub.totalScore !== null ? `${sub.totalScore}%` : 'Not graded'} · {sub.status}
                                     </p>
@@ -224,6 +247,20 @@ export default function Content() {
               <button onClick={handleDeleteAssignment} disabled={saving} className="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50">
                 {saving ? 'Deleting…' : 'Delete'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {plagiarismModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Plagiarism Report</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">{plagiarismModal.student.name}</p>
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">{plagiarismModal.plagiarismReport ?? 'No details available'}</p>
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setPlagiarismModal(null)} className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">Close</button>
+              <button onClick={() => handleDismissPlagiarism(plagiarismModal)} className="px-4 py-2 text-sm bg-gray-600 text-white rounded-lg hover:bg-gray-700">Dismiss Flag</button>
             </div>
           </div>
         </div>
