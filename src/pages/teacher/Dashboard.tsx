@@ -7,6 +7,12 @@ import NavStudentsIcon from '../../components/NavStudentsIcon'
 import NotificationBell from '../../components/NotificationBell'
 import api from '../../api/client'
 
+interface AtRiskStudent {
+  studentId: string
+  name: string
+  reasons: string[]
+}
+
 interface Classroom {
   id: string
   name: string
@@ -25,9 +31,21 @@ export default function TeacherDashboard() {
   const [newYearLevel, setNewYearLevel] = useState('')
   const [newClassPassword, setNewClassPassword] = useState('')
   const [loading, setLoading] = useState(true)
+  const [atRisk, setAtRisk] = useState<{ classroomId: string; classroomName: string; students: AtRiskStudent[] }[]>([])
 
   useEffect(() => {
-    api.get('/classrooms').then(r => { setClassrooms(r.data); setLoading(false) })
+    api.get('/classrooms').then(r => {
+      setClassrooms(r.data)
+      setLoading(false)
+      const rooms: Classroom[] = r.data
+      Promise.all(
+        rooms.map(c =>
+          api.get(`/students/classrooms/${c.id}/at-risk`)
+            .then(res => ({ classroomId: c.id, classroomName: c.name, students: res.data as AtRiskStudent[] }))
+            .catch(() => ({ classroomId: c.id, classroomName: c.name, students: [] }))
+        )
+      ).then(results => setAtRisk(results.filter(r => r.students.length > 0)))
+    })
   }, [])
 
   async function createClassroom(e: React.FormEvent) {
@@ -65,6 +83,30 @@ export default function TeacherDashboard() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
             </svg>
             Rubrics
+          </Link>
+          <Link to="/teacher/templates" className="flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+            </svg>
+            Templates
+          </Link>
+          <Link to="/teacher/planner" className="flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+            </svg>
+            Planner
+          </Link>
+          <Link to="/teacher/interventions" className="flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+            </svg>
+            Interventions
+          </Link>
+          <Link to="/teacher/announcements" className="flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.34 15.84c-.196-.197-.298-.452-.299-.71a.5.5 0 0 1 .015-.115m0 0 3.25-3.25M10.056 15.015l-2.167 2.167a2.25 2.25 0 0 1-3.182-3.182l2.167-2.167m6.717-6.717 3.182 3.182-1.415 1.414-3.182-3.182 1.415-1.414ZM19.5 4.5l-3.75 3.75M19.5 4.5l-1.06 1.06M4.5 19.5l3.75-3.75" />
+            </svg>
+            Announcements
           </Link>
           <Link to="/teacher/assignments" className="flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
@@ -180,6 +222,33 @@ export default function TeacherDashboard() {
                 </div>
               </Link>
             ))}
+          </div>
+        )}
+        {atRisk.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-amber-500">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+              </svg>
+              At-Risk Students
+            </h2>
+            <div className="space-y-3">
+              {atRisk.map(group => (
+                <div key={group.classroomId} className="bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
+                  <p className="text-xs font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wide mb-2">{group.classroomName}</p>
+                  <div className="space-y-1">
+                    {group.students.map(s => (
+                      <div key={s.studentId} className="flex items-center gap-3 text-sm">
+                        <span className="font-medium text-gray-900 dark:text-white">{s.name}</span>
+                        <span className="text-gray-400">—</span>
+                        <span className="text-gray-500 dark:text-gray-400">{s.reasons.join(', ')}</span>
+                        <Link to={`/teacher/grades/${s.studentId}?classroomId=${group.classroomId}`} className="ml-auto text-xs text-indigo-600 dark:text-indigo-400 hover:underline shrink-0">View →</Link>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </main>

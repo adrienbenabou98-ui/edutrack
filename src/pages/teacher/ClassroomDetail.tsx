@@ -43,6 +43,7 @@ export default function ClassroomDetail() {
   const [tab, setTab] = useState<Tab>('assignments')
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [plagiarismModal, setPlagiarismModal] = useState<{ report: string; submissionId: string } | null>(null)
+  const [engagementMap, setEngagementMap] = useState<Record<string, { score: number; level: string }>>({})
 
   const { boundaries, loaded, load } = useBoundaryStore()
   useEffect(() => { if (!loaded) load() }, [loaded])
@@ -54,6 +55,15 @@ export default function ClassroomDetail() {
   useEffect(() => {
     if (tab === 'leaderboard' && id) {
       api.get(`/classrooms/${id}/leaderboard`).then(r => setLeaderboard(r.data)).catch(() => {})
+    }
+    if (tab === 'students' && id) {
+      api.get(`/students/classrooms/${id}/engagement`)
+        .then(r => {
+          const map: Record<string, { score: number; level: string }> = {}
+          for (const item of r.data) map[item.studentId] = { score: item.score, level: item.level }
+          setEngagementMap(map)
+        })
+        .catch(() => {})
     }
   }, [tab, id])
 
@@ -296,12 +306,23 @@ export default function ClassroomDetail() {
                       {s.name[0]}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <button
-                        onClick={() => navigate(`/teacher/grades/${s.id}?classroomId=${id}`)}
-                        className="font-medium text-gray-900 dark:text-white text-sm hover:text-indigo-600 dark:hover:text-indigo-400 text-left"
-                      >
-                        {s.name}
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => navigate(`/teacher/grades/${s.id}?classroomId=${id}`)}
+                          className="font-medium text-gray-900 dark:text-white text-sm hover:text-indigo-600 dark:hover:text-indigo-400 text-left"
+                        >
+                          {s.name}
+                        </button>
+                        {engagementMap[s.id] && (
+                          <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
+                            engagementMap[s.id].level === 'HIGH' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                            engagementMap[s.id].level === 'MEDIUM' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
+                            'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                          }`} title={`Engagement score: ${engagementMap[s.id].score}`}>
+                            {engagementMap[s.id].level}
+                          </span>
+                        )}
+                      </div>
                       <p className="text-xs text-gray-400 mt-0.5">
                         {s.username ? `@${s.username}` : s.email ?? '—'}
                         {s.yearLevel && <span className="ml-2 text-indigo-400">Yr {s.yearLevel}</span>}

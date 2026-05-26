@@ -16,6 +16,10 @@ import TeacherStudents from './pages/teacher/Students'
 import Rubrics from './pages/teacher/Rubrics'
 import TeacherAllAssignments from './pages/teacher/AllAssignments'
 import TeacherRankings from './pages/teacher/TeacherRankings'
+import TeacherTemplates from './pages/teacher/Templates'
+import TeacherLessonPlanner from './pages/teacher/LessonPlanner'
+import TeacherInterventions from './pages/teacher/Interventions'
+import TeacherAnnouncements from './pages/teacher/Announcements'
 import MessagesPage from './pages/Messages'
 import AdminUsers from './pages/admin/Users'
 import AdminClassrooms from './pages/admin/Classrooms'
@@ -55,6 +59,10 @@ export default function App() {
         <Route path="/teacher/rubrics" element={<ProtectedRoute role="TEACHER"><Rubrics /></ProtectedRoute>} />
         <Route path="/teacher/assignments" element={<ProtectedRoute role="TEACHER"><TeacherAllAssignments /></ProtectedRoute>} />
         <Route path="/teacher/rankings" element={<ProtectedRoute role="TEACHER"><TeacherRankings /></ProtectedRoute>} />
+        <Route path="/teacher/templates" element={<ProtectedRoute role="TEACHER"><TeacherTemplates /></ProtectedRoute>} />
+        <Route path="/teacher/planner" element={<ProtectedRoute role="TEACHER"><TeacherLessonPlanner /></ProtectedRoute>} />
+        <Route path="/teacher/interventions" element={<ProtectedRoute role="TEACHER"><TeacherInterventions /></ProtectedRoute>} />
+        <Route path="/teacher/announcements" element={<ProtectedRoute role="TEACHER"><TeacherAnnouncements /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute role="ADMIN"><AdminUsers /></ProtectedRoute>} />
         <Route path="/admin/users" element={<ProtectedRoute role="ADMIN"><AdminUsers /></ProtectedRoute>} />
         <Route path="/admin/classrooms" element={<ProtectedRoute role="ADMIN"><AdminClassrooms /></ProtectedRoute>} />

@@ -10,6 +10,20 @@ import TermIndicator from '../../components/TermIndicator'
 import NavStudentsIcon from '../../components/NavStudentsIcon'
 import api from '../../api/client'
 
+interface TimelineEvent {
+  type: string
+  date: string
+  title: string
+  detail: string | null
+}
+interface ParentContact {
+  id: string
+  type: string
+  summary: string
+  outcome: string | null
+  date: string
+}
+
 interface AssignmentRow {
   assignmentId: string
   submissionId: string | null
@@ -70,12 +84,37 @@ export default function StudentGradeDetail() {
   const [curveAssignment, setCurveAssignment] = useState<{ id: string; title: string } | null>(null)
   const [showPdfModal, setShowPdfModal] = useState(false)
   const [units, setUnits] = useState<{ id: string; name: string }[]>([])
-
   const [customItems, setCustomItems] = useState<CustomItem[]>([])
+
+  type DetailTab = 'grades' | 'timeline' | 'contacts'
+  const [activeTab, setActiveTab] = useState<DetailTab>('grades')
+  const [timeline, setTimeline] = useState<TimelineEvent[]>([])
+  const [timelineLoading, setTimelineLoading] = useState(false)
+  const [contacts, setContacts] = useState<ParentContact[]>([])
+  const [contactsLoading, setContactsLoading] = useState(false)
+  const [contactForm, setContactForm] = useState({ type: 'Email', summary: '', outcome: '' })
+  const [addingContact, setAddingContact] = useState(false)
 
   useEffect(() => {
     if (!storeBoundariesLoaded) loadBoundaries()
   }, [])
+
+  useEffect(() => {
+    if (activeTab === 'timeline' && studentId) {
+      setTimelineLoading(true)
+      api.get(`/students/${studentId}/timeline`)
+        .then(r => setTimeline(r.data))
+        .catch(() => setTimeline([]))
+        .finally(() => setTimelineLoading(false))
+    }
+    if (activeTab === 'contacts' && studentId) {
+      setContactsLoading(true)
+      api.get(`/students/${studentId}/contacts`)
+        .then(r => setContacts(r.data))
+        .catch(() => setContacts([]))
+        .finally(() => setContactsLoading(false))
+    }
+  }, [activeTab, studentId])
 
   useEffect(() => {
     if (!classroomId) return
@@ -164,6 +203,15 @@ export default function StudentGradeDetail() {
 
       {!loading && data && (
         <main className="max-w-4xl mx-auto px-6 py-8 space-y-6">
+          <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1 w-fit">
+            {([['grades', 'Grades'], ['timeline', 'Timeline'], ['contacts', 'Parent Contacts']] as [DetailTab, string][]).map(([t, label]) => (
+              <button key={t} onClick={() => setActiveTab(t)}
+                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === t ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'}`}>
+                {label}
+              </button>
+            ))}
+          </div>
+          {activeTab === 'grades' && (<>
           <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -327,6 +375,96 @@ export default function StudentGradeDetail() {
               </div>
             </div>
           </div>
+          </>)}
+
+          {activeTab === 'timeline' && (
+            <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
+              <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-4">Activity Timeline</h3>
+              {timelineLoading ? (
+                <div className="text-center py-8 text-gray-400">Loading…</div>
+              ) : timeline.length === 0 ? (
+                <p className="text-sm text-gray-400 text-center py-8 border border-dashed border-gray-200 dark:border-gray-700 rounded-xl">No activity recorded yet.</p>
+              ) : (
+                <ol className="relative border-l border-gray-200 dark:border-gray-700 space-y-4 pl-4">
+                  {timeline.map((ev, i) => (
+                    <li key={i} className="ml-2">
+                      <div className="absolute -left-1.5 mt-1.5 w-3 h-3 rounded-full bg-indigo-400 border-2 border-white dark:border-gray-800" />
+                      <time className="text-xs text-gray-400">{new Date(ev.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}</time>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">{ev.title}</p>
+                      {ev.detail && <p className="text-xs text-gray-500 dark:text-gray-400">{ev.detail}</p>}
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'contacts' && (
+            <div className="space-y-4">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-4">Log Parent Contact</h3>
+                <form onSubmit={async e => {
+                  e.preventDefault()
+                  setAddingContact(true)
+                  try {
+                    const { data: created } = await api.post(`/students/${studentId}/contacts`, {
+                      type: contactForm.type,
+                      summary: contactForm.summary,
+                      outcome: contactForm.outcome || undefined,
+                    })
+                    setContacts(prev => [created, ...prev])
+                    setContactForm({ type: 'Email', summary: '', outcome: '' })
+                  } finally {
+                    setAddingContact(false)
+                  }
+                }} className="space-y-3">
+                  <div className="flex gap-3 flex-wrap">
+                    <select value={contactForm.type} onChange={e => setContactForm(f => ({ ...f, type: e.target.value }))}
+                      className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                      {['Email', 'Phone', 'In person', 'Letter', 'Other'].map(t => <option key={t}>{t}</option>)}
+                    </select>
+                    <input value={contactForm.outcome} onChange={e => setContactForm(f => ({ ...f, outcome: e.target.value }))}
+                      placeholder="Outcome (optional)"
+                      className="flex-1 min-w-[160px] border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                  </div>
+                  <textarea value={contactForm.summary} onChange={e => setContactForm(f => ({ ...f, summary: e.target.value }))}
+                    required rows={2} placeholder="Summary of the contact…"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none" />
+                  <div className="flex justify-end">
+                    <button type="submit" disabled={addingContact} className="btn-3d-indigo disabled:opacity-50">
+                      {addingContact ? 'Saving…' : 'Log contact'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-4">Contact History</h3>
+                {contactsLoading ? (
+                  <div className="text-center py-8 text-gray-400">Loading…</div>
+                ) : contacts.length === 0 ? (
+                  <p className="text-sm text-gray-400 text-center py-8 border border-dashed border-gray-200 dark:border-gray-700 rounded-xl">No contacts logged yet.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {contacts.map(c => (
+                      <div key={c.id} className="flex items-start gap-3 py-3 border-b border-gray-50 dark:border-gray-700/50 last:border-0">
+                        <span className="text-xs px-2 py-1 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 font-medium shrink-0">{c.type}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-gray-800 dark:text-gray-200">{c.summary}</p>
+                          {c.outcome && <p className="text-xs text-gray-500 mt-0.5">Outcome: {c.outcome}</p>}
+                          <time className="text-xs text-gray-400">{new Date(c.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}</time>
+                        </div>
+                        <button onClick={async () => {
+                          await api.delete(`/students/${studentId}/contacts/${c.id}`)
+                          setContacts(prev => prev.filter(x => x.id !== c.id))
+                        }} className="text-xs text-red-400 hover:text-red-600 shrink-0">Remove</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </main>
       )}
 

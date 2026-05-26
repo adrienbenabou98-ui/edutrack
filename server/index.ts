@@ -24,7 +24,12 @@ import adminRoutes from './routes/admin.js'
 import notificationRoutes from './routes/notifications.js'
 import gradeGoalRoutes from './routes/gradeGoals.js'
 import rubricRoutes from './routes/rubrics.js'
+import templateRoutes from './routes/templates.js'
+import lessonPlanRoutes from './routes/lessonPlans.js'
+import studentRoutes from './routes/students.js'
+import announcementRoutes from './routes/announcements.js'
 
+import { PrismaClient } from '@prisma/client'
 dotenv.config()
 
 const app = express()
@@ -103,6 +108,10 @@ app.use('/api/admin', adminRoutes)
 app.use('/api/notifications', notificationRoutes)
 app.use('/api/grade-goals', gradeGoalRoutes)
 app.use('/api/rubrics', rubricRoutes)
+app.use('/api/templates', templateRoutes)
+app.use('/api/lesson-plans', lessonPlanRoutes)
+app.use('/api/students', studentRoutes)
+app.use('/api/announcements', announcementRoutes)
 
 // In production, serve the built frontend from the same server
 if (process.env.NODE_ENV === 'production') {
@@ -123,6 +132,58 @@ app.use((err: any, _req: any, res: any, next: any) => {
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`)
+  startReminderScheduler()
 })
 
 export default app
+
+const prismaScheduler = new PrismaClient()
+
+function startReminderScheduler() {
+  // Runs once on startup, then every 24 hours
+  runDailyReminders()
+  setInterval(runDailyReminders, 24 * 60 * 60 * 1000)
+}
+
+async function runDailyReminders() {
+  try {
+    const now = new Date()
+    const in48h = new Date(now.getTime() + 48 * 60 * 60 * 1000)
+
+    // Find assignments due within the next 48 hours that are published
+    const upcoming = await prismaScheduler.assignment.findMany({
+      where: {
+        status: 'PUBLISHED',
+        dueDate: { gte: now, lte: in48h },
+      },
+      include: {
+        classroom: {
+          include: { enrollments: { select: { studentId: true } } },
+        },
+      },
+    })
+
+    for (const assignment of upcoming) {
+      for (const { studentId } of assignment.classroom.enrollments) {
+        const already = await prismaScheduler.notification.findFirst({
+          where: {
+            userId: studentId,
+            type: 'ASSIGNMENT_REMINDER',
+            title: { contains: assignment.id },
+          },
+        })
+        if (already) continue
+        await prismaScheduler.notification.create({
+          data: {
+            userId: studentId,
+            type: 'ASSIGNMENT_REMINDER',
+            title: assignment.id,
+            message: `Reminder: "${assignment.title}" is due ${assignment.dueDate ? new Date(assignment.dueDate).toLocaleDateString() : 'soon'}.`,
+          },
+        })
+      }
+    }
+  } catch {
+    // Scheduler errors must not crash the server
+  }
+}
