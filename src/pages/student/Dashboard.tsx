@@ -109,7 +109,7 @@ export default function StudentDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
-        <span className="text-lg font-semibold text-teal-700">EduTrack</span>
+        <span className="text-lg font-semibold text-teal-700 dark:text-teal-400">EduTrack</span>
         <div className="flex items-center gap-4">
           <Link to="/student/assignments" className={NAV_ICON_CLS}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
@@ -151,24 +151,24 @@ export default function StudentDashboard() {
             Settings
           </Link>
           <span className="text-sm text-gray-600 dark:text-gray-300">{user?.name}</span>
-          <button onClick={logout} className="text-sm text-gray-500 hover:text-gray-700">Sign out</button>
+          <button onClick={logout} className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">Sign out</button>
         </div>
       </nav>
 
       <main className="max-w-3xl mx-auto px-6 py-8">
         <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-gray-900">Hi, {user?.name?.split(' ')[0]} 👋</h1>
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Hi, {user?.name?.split(' ')[0]} 👋</h1>
           <p className="text-gray-500 text-sm mt-1">
             {due.length === 0 ? 'You\'re all caught up!' : `You have ${due.length} task${due.length > 1 ? 's' : ''} to complete`}
           </p>
         </div>
 
         {showJoin && (
-          <form onSubmit={joinClass} className="mb-6 bg-white border border-gray-200 rounded-xl p-4">
-            <p className="text-sm font-medium text-gray-700 mb-3">Enter your class code</p>
+          <form onSubmit={joinClass} className="mb-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Enter your class code</p>
             <div className="flex gap-3">
               <input autoFocus value={classCode} onChange={e => setClassCode(e.target.value.toUpperCase())}
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-teal-500"
+                className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm font-mono tracking-widest bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
                 placeholder="ABC123" maxLength={6} required />
               <button type="submit" className="btn-3d-teal">Join</button>
               <button type="button" onClick={() => setShowJoin(false)} className="text-gray-500 px-3 text-sm">Cancel</button>
@@ -180,7 +180,7 @@ export default function StudentDashboard() {
         {loading ? (
           <div className="text-center py-16 text-gray-400">Loading…</div>
         ) : assignments.length === 0 && classrooms.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
+          <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
             <p className="text-gray-400 text-lg">No assignments yet</p>
             <p className="text-gray-400 text-sm mt-1">Join a class using a class code from your teacher</p>
           </div>
@@ -269,10 +269,10 @@ export default function StudentDashboard() {
                     const badge = statusBadge(a.submissions)
                     return (
                       <Link key={a.id} to={`/student/assignment/${a.id}`}
-                        className="block bg-white border border-gray-200 rounded-xl px-5 py-4 hover:border-teal-300 hover:shadow-sm transition-all">
+                        className="block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-4 hover:border-teal-300 hover:shadow-sm transition-all">
                         <div className="flex items-start justify-between">
                           <div>
-                            <h3 className="font-medium text-gray-900">{a.title}</h3>
+                            <h3 className="font-medium text-gray-900 dark:text-white">{a.title}</h3>
                             <p className="text-sm text-gray-400 mt-0.5">{a.classroom.name} · {a._count.questions} questions</p>
                           </div>
                           <span className={`text-xs px-2 py-1 rounded-full font-medium ${badge.color}`}>{badge.label}</span>
@@ -293,10 +293,10 @@ export default function StudentDashboard() {
                   {done.map(a => {
                     const badge = statusBadge(a.submissions)
                     return (
-                      <div key={a.id} className="bg-white border border-gray-200 rounded-xl px-5 py-4 opacity-75">
+                      <div key={a.id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-4 opacity-75">
                         <div className="flex items-start justify-between">
                           <div>
-                            <h3 className="font-medium text-gray-900">{a.title}</h3>
+                            <h3 className="font-medium text-gray-900 dark:text-white">{a.title}</h3>
                             <p className="text-sm text-gray-400 mt-0.5">{a.classroom.name}</p>
                           </div>
                           <span className={`text-xs px-2 py-1 rounded-full font-medium ${badge.color}`}>{badge.label}</span>

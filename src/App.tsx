@@ -28,6 +28,7 @@ import AdminAnalytics from './pages/admin/Analytics'
 import AdminPlatformSettings from './pages/admin/PlatformSettings'
 import AdminSecurity from './pages/admin/Security'
 import AnnouncementBanner from './components/AnnouncementBanner'
+import ElectronTitleBar from './components/ElectronTitleBar'
 import StudentDashboard from './pages/student/Dashboard'
 import TakeAssignment from './pages/student/TakeAssignment'
 import StudentProgress from './pages/student/Progress'
@@ -45,6 +46,7 @@ export default function App() {
   return (
     <ErrorBoundary>
     <Router>
+      <ElectronTitleBar />
       <AnnouncementBanner />
       <Routes>
         <Route path="/login" element={<Login />} />
