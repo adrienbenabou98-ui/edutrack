@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell, Menu } from 'electron'
+import { app, BrowserWindow, shell, Menu, ipcMain } from 'electron'
 import path from 'path'
 
 const isDev = process.env.NODE_ENV === 'development'
@@ -46,6 +46,10 @@ function createWindow() {
     return { action: 'deny' }
   })
 }
+
+ipcMain.on('update-titlebar', (_, opts: { color: string; symbolColor: string }) => {
+  win?.setTitleBarOverlay(opts)
+})
 
 app.whenReady().then(() => {
   Menu.setApplicationMenu(null)
