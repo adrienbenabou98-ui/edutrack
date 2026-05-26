@@ -16,6 +16,13 @@ html { font-family: theme(--font-sans); }
 .electron-drag    { -webkit-app-region: drag; }
 .electron-no-drag { -webkit-app-region: no-drag; cursor: default; }
 
+/* Hide scrollbar track while keeping scroll functionality */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Prevent outer body scrollbar */
+body { overflow: hidden; }
+
 @layer components {
   .btn-3d-indigo {
     @apply text-white text-sm font-medium px-4 py-2 rounded-lg;

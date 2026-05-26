@@ -50,7 +50,7 @@ export default function App() {
     <Router>
       <div className="flex flex-col h-screen overflow-hidden">
       <ElectronTitleBar />
-      <div className="flex-1 min-h-0 overflow-y-auto">
+      <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar">
       <AnnouncementBanner />
       <Routes>
         <Route path="/login" element={<Login />} />
