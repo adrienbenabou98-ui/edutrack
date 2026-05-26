@@ -24,7 +24,8 @@ api.interceptors.response.use(
           return api.request(error.config)
         } catch {
           localStorage.clear()
-          window.location.href = '/login'
+          const isElectron = typeof window !== 'undefined' && (window as any).electron
+          window.location.href = isElectron ? '#/login' : '/login'
         }
       }
     }

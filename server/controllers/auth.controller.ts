@@ -15,7 +15,7 @@ function generateTokens(user: { id: string; role: string; email?: string | null;
   const refresh = jwt.sign(
     { id: user.id, tv },
     process.env.JWT_REFRESH_SECRET!,
-    { expiresIn: '7d' }
+    { expiresIn: '30d' }
   )
   return { access, refresh }
 }
