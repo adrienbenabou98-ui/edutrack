@@ -28,6 +28,8 @@ import templateRoutes from './routes/templates.js'
 import lessonPlanRoutes from './routes/lessonPlans.js'
 import studentRoutes from './routes/students.js'
 import announcementRoutes from './routes/announcements.js'
+import googleRoutes from './routes/google.routes.js'
+import { createCalendarEvent } from './services/google.service.js'
 
 import { PrismaClient } from '@prisma/client'
 dotenv.config()
@@ -112,6 +114,7 @@ app.use('/api/templates', templateRoutes)
 app.use('/api/lesson-plans', lessonPlanRoutes)
 app.use('/api/students', studentRoutes)
 app.use('/api/announcements', announcementRoutes)
+app.use('/api/google', googleRoutes)
 
 // In production, serve the built frontend from the same server
 if (process.env.NODE_ENV === 'production') {
@@ -181,6 +184,22 @@ async function runDailyReminders() {
             message: `Reminder: "${assignment.title}" is due ${assignment.dueDate ? new Date(assignment.dueDate).toLocaleDateString() : 'soon'}.`,
           },
         })
+
+        // Silent Google Calendar sync alongside the in-app notification
+        prismaScheduler.user.findUnique({
+          where: { id: studentId },
+          select: { googleCalendarLinked: true, googleAccessToken: true, googleRefreshToken: true, googleTokenExpiry: true },
+        }).then(student => {
+          if (student?.googleCalendarLinked && student.googleAccessToken && student.googleRefreshToken && assignment.dueDate) {
+            createCalendarEvent(
+              studentId,
+              student.googleAccessToken,
+              student.googleRefreshToken,
+              student.googleTokenExpiry,
+              { title: `${assignment.title} — due soon`, dueDate: new Date(assignment.dueDate) },
+            ).catch(() => {})
+          }
+        }).catch(() => {})
       }
     }
   } catch {

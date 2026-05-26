@@ -7,9 +7,10 @@ import type { Term } from '../../store/term.store'
 import TermIndicator from '../../components/TermIndicator'
 import NavStudentsIcon from '../../components/NavStudentsIcon'
 import UnderstandingLevelsSettings from '../../components/UnderstandingLevelsSettings'
+import GoogleCalendarConnect from '../../components/GoogleCalendarConnect'
 import api from '../../api/client'
 
-type SettingsTab = 'grades' | 'terms' | 'levels'
+type SettingsTab = 'grades' | 'terms' | 'levels' | 'integrations'
 
 function termStatus(term: Term): { label: string; colour: string } {
   const today = new Date(); today.setHours(0, 0, 0, 0)
@@ -100,7 +101,7 @@ export default function Settings() {
 
       <main className="max-w-2xl mx-auto px-6 py-8">
         <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1 mb-6 w-fit">
-          {([['grades', 'Grade Tiers'], ['terms', 'Terms'], ['levels', 'Understanding Levels']] as [SettingsTab, string][]).map(([t, label]) => (
+          {([['grades', 'Grade Tiers'], ['terms', 'Terms'], ['levels', 'Understanding Levels'], ['integrations', 'Integrations']] as [SettingsTab, string][]).map(([t, label]) => (
             <button key={t} onClick={() => setTab(t)}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>
               {label}
@@ -204,6 +205,15 @@ export default function Settings() {
                 })}
               </div>
             )}
+          </div>
+        )}
+        {tab === 'integrations' && (
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
+            <div className="mb-5">
+              <h2 className="text-base font-semibold text-gray-900 dark:text-white">Integrations</h2>
+              <p className="text-sm text-gray-400 mt-1">Connect third-party services to enhance your workflow.</p>
+            </div>
+            <GoogleCalendarConnect />
           </div>
         )}
       </main>

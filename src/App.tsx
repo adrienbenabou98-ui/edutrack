@@ -33,6 +33,7 @@ import TakeAssignment from './pages/student/TakeAssignment'
 import StudentProgress from './pages/student/Progress'
 import StudentRankings from './pages/student/Rankings'
 import StudentAssignments from './pages/student/Assignments'
+import StudentSettings from './pages/student/Settings'
 
 export default function App() {
   const loadUser = useAuthStore(s => s.loadUser)
@@ -75,6 +76,7 @@ export default function App() {
         <Route path="/student/progress" element={<ProtectedRoute role="STUDENT"><StudentProgressPage /></ProtectedRoute>} />
         <Route path="/student/rankings" element={<ProtectedRoute role="STUDENT"><StudentRankings /></ProtectedRoute>} />
         <Route path="/student/assignments" element={<ProtectedRoute role="STUDENT"><StudentAssignments /></ProtectedRoute>} />
+        <Route path="/student/settings" element={<ProtectedRoute role="STUDENT"><StudentSettings /></ProtectedRoute>} />
         <Route path="/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

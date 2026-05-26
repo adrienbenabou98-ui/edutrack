@@ -2,6 +2,7 @@ import { Response } from 'express'
 import { prisma } from '../prisma/client.js'
 import { AuthRequest } from '../middleware/auth.js'
 import { createNotification } from './notification.controller.js'
+import { createCalendarEvent } from '../services/google.service.js'
 
 export async function createAssignment(req: AuthRequest, res: Response) {
   const { classroomId, title, instructions, type, dueDate, totalPoints, timeLimit, questions, subject, unitName } = req.body
@@ -37,6 +38,24 @@ export async function createAssignment(req: AuthRequest, res: Response) {
     include: { questions: true },
   })
   res.status(201).json(assignment)
+
+  // Silent Google Calendar sync — never fails the request
+  if (assignment.dueDate) {
+    prisma.user.findUnique({
+      where: { id: req.user!.id },
+      select: { googleCalendarLinked: true, googleAccessToken: true, googleRefreshToken: true, googleTokenExpiry: true },
+    }).then(teacher => {
+      if (teacher?.googleCalendarLinked && teacher.googleAccessToken && teacher.googleRefreshToken) {
+        createCalendarEvent(
+          req.user!.id,
+          teacher.googleAccessToken,
+          teacher.googleRefreshToken,
+          teacher.googleTokenExpiry,
+          { title: assignment.title, description: 'Assignment due date', dueDate: assignment.dueDate! },
+        )
+      }
+    }).catch(() => {})
+  }
 }
 
 export async function getAssignment(req: AuthRequest, res: Response) {

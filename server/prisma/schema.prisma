@@ -84,6 +84,11 @@ model User {
   interventionsAsStudent Intervention[]        @relation("StudentInterventions")
   interventionsAsTeacher Intervention[]        @relation("TeacherInterventions")
   teacherAnnouncements   TeacherAnnouncement[] @relation("TeacherAnnouncementsRel")
+
+  googleAccessToken    String?
+  googleRefreshToken   String?
+  googleTokenExpiry    DateTime?
+  googleCalendarLinked Boolean   @default(false)
 }
 
 model Classroom {
