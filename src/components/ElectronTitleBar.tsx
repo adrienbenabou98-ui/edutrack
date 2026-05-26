@@ -4,17 +4,11 @@ export default function ElectronTitleBar() {
   const { minimize, maximize, close } = window.electron
 
   return (
-    <div
-      className="flex items-center justify-between h-8 px-3 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 select-none shrink-0"
-      style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
-    >
-      <span className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 tracking-widest uppercase">
+    <div className="electron-drag flex items-center justify-between h-8 px-3 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 select-none shrink-0">
+      <span className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 tracking-widest uppercase electron-no-drag">
         EduTrack
       </span>
-      <div
-        className="flex items-center gap-1"
-        style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
-      >
+      <div className="electron-no-drag flex items-center gap-1">
         <button
           onClick={minimize}
           className="w-7 h-7 flex items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
