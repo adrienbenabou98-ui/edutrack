@@ -22,10 +22,12 @@ api.interceptors.response.use(
           localStorage.setItem('refresh_token', data.refresh)
           error.config.headers.Authorization = `Bearer ${data.access}`
           return api.request(error.config)
-        } catch {
-          localStorage.clear()
-          const isElectron = typeof window !== 'undefined' && (window as any).electron
-          window.location.href = isElectron ? '#/login' : '/login'
+        } catch (refreshErr: any) {
+          if (refreshErr?.response?.status === 401 || refreshErr?.response?.status === 403) {
+            localStorage.clear()
+            const isElectron = typeof window !== 'undefined' && (window as any).electron
+            window.location.href = isElectron ? '#/login' : '/login'
+          }
         }
       }
     }

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell, Menu, ipcMain } from 'electron'
+import { app, BrowserWindow, shell, Menu } from 'electron'
 import path from 'path'
 
 const isDev = process.env.NODE_ENV === 'development'
@@ -17,7 +17,12 @@ function createWindow() {
     height: 800,
     minWidth: 900,
     minHeight: 600,
-    frame: false,
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: '#ffffff',
+      symbolColor: '#6b7280',
+      height: 32,
+    },
     icon: getIconPath(),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -45,9 +50,6 @@ function createWindow() {
 app.whenReady().then(() => {
   Menu.setApplicationMenu(null)
   createWindow()
-  ipcMain.on('win-minimize', () => win?.minimize())
-  ipcMain.on('win-maximize', () => win?.isMaximized() ? win.unmaximize() : win?.maximize())
-  ipcMain.on('win-close',    () => win?.close())
 })
 
 app.on('window-all-closed', () => {

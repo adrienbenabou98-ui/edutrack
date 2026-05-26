@@ -1,9 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useAuthStore } from '../../store/auth.store'
-import DarkModeToggle from '../../components/DarkModeToggle'
-import NotificationBell from '../../components/NotificationBell'
-import NavStudentsIcon from '../../components/NavStudentsIcon'
+import TeacherNav from '../../components/TeacherNav'
 import GoogleCalendarConnect from '../../components/GoogleCalendarConnect'
 import api from '../../api/client'
 
@@ -27,8 +23,6 @@ function buildCalendar(year: number, month: number): (number | null)[] {
 }
 
 export default function TeacherCalendar() {
-  const user = useAuthStore(s => s.user)
-  const logout = useAuthStore(s => s.logout)
   const today = new Date()
   const [year, setYear] = useState(today.getFullYear())
   const [month, setMonth] = useState(today.getMonth())
@@ -65,25 +59,7 @@ export default function TeacherCalendar() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
-        <Link to="/teacher" className="text-lg font-semibold text-indigo-700 dark:text-indigo-400">EduTrack</Link>
-        <div className="flex items-center gap-2">
-          <Link to="/teacher/grades" className="flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">Grade Tracker</Link>
-          <NavStudentsIcon />
-          <Link to="/teacher/assignments" className="flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">Assignments</Link>
-          <Link to="/teacher/calendar" className="flex items-center gap-1.5 text-sm font-medium text-indigo-600 dark:text-indigo-400 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-            </svg>
-            Calendar
-          </Link>
-          <Link to="/teacher/settings" className="flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">Settings</Link>
-          <NotificationBell accent="indigo" />
-          <DarkModeToggle />
-          <span className="text-sm text-gray-600 dark:text-gray-300">{user?.name}</span>
-          <button onClick={logout} className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">Sign out</button>
-        </div>
-      </nav>
+      <TeacherNav activePage="calendar" />
 
       <main className="max-w-3xl mx-auto px-6 py-8">
         <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
