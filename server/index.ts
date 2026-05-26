@@ -60,9 +60,9 @@ app.use(express.json({ limit: '1mb' }))
 
 // Rate limiters
 const loginLimiter = rateLimit({
-  windowMs: 5 * 60 * 1000,
+  windowMs: 1 * 60 * 1000,
   max: 10,
-  message: { error: 'Too many login attempts, please try again in 5 minutes' },
+  message: { error: 'Too many login attempts, please try again in 1 minute' },
   standardHeaders: true,
   legacyHeaders: false,
 })
