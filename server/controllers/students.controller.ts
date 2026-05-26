@@ -151,7 +151,7 @@ export async function getAtRiskStudents(req: AuthRequest, res: Response) {
     const gradedSubs = subs.filter(s => s.status === 'GRADED' && s.totalScore !== null)
     const avgScore = gradedSubs.length > 0 ? gradedSubs.reduce((a, s) => a + (s.totalScore ?? 0), 0) / gradedSubs.length : null
     const reasons: string[] = []
-    if (missing >= 2) reasons.push(`${missing} missing assignment${missing > 1 ? 's' : ''}`)
+    if (missing >= 1) reasons.push(`${missing} missing assignment${missing > 1 ? 's' : ''}`)
     if (avgScore !== null && avgScore < 50) reasons.push(`Average score ${avgScore.toFixed(0)}%`)
     if (reasons.length > 0) flagged.push({ studentId: e.studentId, name: e.student.name, reasons, avgScore, missing })
   }
