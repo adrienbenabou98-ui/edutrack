@@ -1,18 +1,34 @@
+import { useEffect, useRef } from 'react'
+
 export default function ElectronTitleBar() {
+  const barRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = barRef.current
+    if (!el) return
+    // Set drag region directly on the DOM element — bypasses CSS pipeline
+    ;(el.style as any)['-webkit-app-region'] = 'drag'
+    el.querySelectorAll('button').forEach(btn => {
+      ;(btn.style as any)['-webkit-app-region'] = 'no-drag'
+    })
+  }, [])
+
   if (!window.electron) return null
 
   const { minimize, maximize, close } = window.electron
 
   return (
-    <div className="flex items-center justify-between h-8 px-3 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 select-none shrink-0">
-      {/* Only the label is the drag region — buttons area has no drag class so clicks work normally */}
-      <span className="electron-drag flex-1 h-full flex items-center text-[11px] font-semibold text-gray-400 dark:text-gray-500 tracking-widest uppercase">
+    <div
+      ref={barRef}
+      className="flex items-center justify-between h-8 px-3 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 select-none shrink-0"
+    >
+      <span className="flex-1 h-full flex items-center text-[11px] font-semibold text-gray-400 dark:text-gray-500 tracking-widest uppercase pointer-events-none">
         EduTrack
       </span>
       <div className="flex items-center gap-1">
         <button
           onClick={minimize}
-          className="electron-no-drag w-7 h-7 flex items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          className="w-7 h-7 flex items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
           title="Minimize"
         >
           <svg width="10" height="1" viewBox="0 0 10 1" fill="currentColor">
@@ -21,7 +37,7 @@ export default function ElectronTitleBar() {
         </button>
         <button
           onClick={maximize}
-          className="electron-no-drag w-7 h-7 flex items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          className="w-7 h-7 flex items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
           title="Maximize"
         >
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1">
@@ -30,7 +46,7 @@ export default function ElectronTitleBar() {
         </button>
         <button
           onClick={close}
-          className="electron-no-drag w-7 h-7 flex items-center justify-center rounded hover:bg-red-500 text-gray-400 hover:text-white transition-colors"
+          className="w-7 h-7 flex items-center justify-center rounded hover:bg-red-500 text-gray-400 hover:text-white transition-colors"
           title="Close"
         >
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
