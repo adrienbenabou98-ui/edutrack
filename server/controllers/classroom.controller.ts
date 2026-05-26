@@ -75,6 +75,16 @@ export async function getClassroom(req: AuthRequest, res: Response) {
     },
   })
   if (!classroom) { res.status(404).json({ error: 'Classroom not found' }); return }
+
+  const user = req.user!
+  if (user.role === 'TEACHER' && classroom.teacherId !== user.id) {
+    res.status(403).json({ error: 'Forbidden' }); return
+  }
+  if (user.role === 'STUDENT') {
+    const enrolled = classroom.enrollments.some(e => e.studentId === user.id)
+    if (!enrolled) { res.status(403).json({ error: 'Forbidden' }); return }
+  }
+
   res.json(classroom)
 }
 

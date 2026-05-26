@@ -88,7 +88,8 @@ Respond with ONLY valid JSON in this exact format:
       )
     }
   } catch (err) {
-    console.error('Plagiarism check failed:', err)
+    // Log message only — Anthropic SDK errors include Authorization header (API key)
+    console.error('Plagiarism check failed:', (err as any)?.message ?? String(err))
   }
 }
 

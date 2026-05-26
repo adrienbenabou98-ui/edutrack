@@ -6,6 +6,15 @@ import { prisma } from '../prisma/client.js'
 
 export async function studentProgress(req: AuthRequest, res: Response) {
   const studentId = req.user!.role === 'STUDENT' ? req.user!.id : req.params.studentId
+
+  // Teachers may only view progress of students enrolled in their own classrooms
+  if (req.user!.role === 'TEACHER') {
+    const enrolled = await prisma.enrollment.findFirst({
+      where: { studentId, classroom: { teacherId: req.user!.id } },
+    })
+    if (!enrolled) { res.status(403).json({ error: 'Forbidden' }); return }
+  }
+
   const data = await getStudentProgress(studentId)
   res.json(data)
 }

@@ -80,7 +80,8 @@ export async function submitAssignment(req: AuthRequest, res: Response) {
       update: { aiSuggestion },
     })
   } catch (err) {
-    console.error('AI feedback generation failed:', err)
+    // Log message only — Anthropic SDK errors include Authorization header (API key)
+    console.error('AI feedback generation failed:', (err as any)?.message ?? String(err))
   }
 }
 

@@ -35,6 +35,13 @@ export async function exportClassroomCSV(req: AuthRequest, res: Response) {
 
 export async function exportStudentReport(req: AuthRequest, res: Response) {
   const { studentId } = req.params
+
+  // Verify the requesting teacher has this student in one of their classrooms
+  const enrollment = await prisma.enrollment.findFirst({
+    where: { studentId, classroom: { teacherId: req.user!.id } },
+  })
+  if (!enrollment) { res.status(403).json({ error: 'Forbidden' }); return }
+
   const student = await prisma.user.findUnique({ where: { id: studentId }, select: { name: true, email: true } })
   if (!student) { res.status(404).json({ error: 'Not found' }); return }
   const submissions = await prisma.submission.findMany({
