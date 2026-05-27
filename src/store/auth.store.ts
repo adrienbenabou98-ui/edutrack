@@ -54,14 +54,11 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const { data } = await api.get('/auth/me')
       set({ user: data, loading: false })
-    } catch (err: any) {
-      // Only clear session on auth rejection — not on network errors
-      if (err?.response?.status === 401 || err?.response?.status === 403) {
-        localStorage.clear()
-        set({ user: null, loading: false })
-      } else {
-        set({ loading: false })
-      }
+    } catch {
+      // Don't clear localStorage here — the refresh interceptor handles token expiry
+      // and redirects to login only on confirmed 401/403 from the refresh endpoint.
+      // Clearing here would log the user out on Railway cold-start network timeouts.
+      set({ loading: false })
     }
   },
 }))

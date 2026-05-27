@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import TeacherNav from '../../components/TeacherNav'
 import {
   DndContext,
   type DragEndEvent,
@@ -15,7 +15,6 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import api from '../../api/client'
-import NotificationBell from '../../components/NotificationBell'
 
 interface Criteria {
   id?: string
@@ -155,15 +154,7 @@ export default function Rubrics() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link to="/teacher" className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400">← Back</Link>
-          <span className="text-lg font-semibold text-indigo-700">Rubrics</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <NotificationBell accent="indigo" />
-        </div>
-      </nav>
+      <TeacherNav activePage="rubrics" />
 
       <main className="max-w-3xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-6">

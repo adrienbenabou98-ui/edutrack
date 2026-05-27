@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAuthStore } from '../store/auth.store'
+import TeacherNav from '../components/TeacherNav'
+import StudentNav from '../components/StudentNav'
 import api from '../api/client'
 
 interface Message {
@@ -47,12 +49,10 @@ export default function Messages() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
-        <span className={`text-lg font-semibold ${user?.role === 'TEACHER' ? 'text-indigo-700' : 'text-teal-700'}`}>EduTrack</span>
-        <div className="flex items-center gap-4">
-          <a href={user?.role === 'TEACHER' ? '/teacher' : '/student'} className="text-sm text-gray-500 hover:text-gray-700">← Dashboard</a>
-        </div>
-      </nav>
+      {user?.role === 'TEACHER'
+        ? <TeacherNav activePage="messages" />
+        : <StudentNav activePage="messages" />
+      }
 
       <main className="max-w-3xl mx-auto px-6 py-8">
         <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Messages</h1>

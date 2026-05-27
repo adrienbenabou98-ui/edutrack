@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useAuthStore } from '../../store/auth.store'
+import { useSearchParams } from 'react-router-dom'
 import { useBoundaryStore } from '../../store/gradeBoundary.store'
 import GradeCell from '../../components/GradeCell'
 import CurveModal from '../../components/CurveModal'
 import ExternalGradesSection from '../../components/ExternalGradesSection'
 import TermIndicator from '../../components/TermIndicator'
-import NavStudentsIcon from '../../components/NavStudentsIcon'
+import TeacherNav from '../../components/TeacherNav'
 import api from '../../api/client'
 
 interface Classroom { id: string; name: string }
@@ -35,10 +34,7 @@ const CATEGORY_STYLE: Record<string, string> = {
 type GradeTab = 'overview' | 'custom'
 
 export default function GradeTracker() {
-  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const logout = useAuthStore(s => s.logout)
-  const user = useAuthStore(s => s.user)
   const { boundaries, loaded: boundariesLoaded, load: loadBoundaries } = useBoundaryStore()
 
   const [classrooms, setClassrooms] = useState<Classroom[]>([])
@@ -89,19 +85,7 @@ export default function GradeTracker() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <button onClick={() => navigate('/teacher')} className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400">← Dashboard</button>
-          <span className="text-lg font-semibold text-indigo-700 dark:text-indigo-400">Grade Tracker</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <TermIndicator />
-          <NavStudentsIcon />
-          <button onClick={() => navigate('/teacher/settings')} className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400">Settings</button>
-          <span className="text-sm text-gray-600 dark:text-gray-300">{user?.name}</span>
-          <button onClick={logout} className="text-sm text-gray-500 hover:text-gray-700">Sign out</button>
-        </div>
-      </nav>
+      <TeacherNav activePage="grades" />
 
       <main className="max-w-6xl mx-auto px-6 py-8">
         <div className="flex items-center gap-4 mb-6 flex-wrap">

@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useBoundaryStore } from '../../store/gradeBoundary.store'
 import type { Boundary } from '../../store/gradeBoundary.store'
 import { useTermStore } from '../../store/term.store'
 import type { Term } from '../../store/term.store'
-import TermIndicator from '../../components/TermIndicator'
-import NavStudentsIcon from '../../components/NavStudentsIcon'
+import TeacherNav from '../../components/TeacherNav'
 import UnderstandingLevelsSettings from '../../components/UnderstandingLevelsSettings'
 import api from '../../api/client'
 
@@ -24,7 +22,6 @@ interface TermModal { name: string; startDate: string; endDate: string }
 const emptyTermModal = (): TermModal => ({ name: '', startDate: '', endDate: '' })
 
 export default function Settings() {
-  const navigate = useNavigate()
   const [tab, setTab] = useState<SettingsTab>('grades')
 
   // Grade boundaries
@@ -87,16 +84,7 @@ export default function Settings() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <button onClick={() => navigate('/teacher')} className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400">← Dashboard</button>
-          <span className="text-lg font-semibold text-indigo-700 dark:text-indigo-400">Settings</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <NavStudentsIcon />
-          <TermIndicator />
-        </div>
-      </nav>
+      <TeacherNav activePage="settings" />
 
       <main className="max-w-2xl mx-auto px-6 py-8">
         <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1 mb-6 w-fit">

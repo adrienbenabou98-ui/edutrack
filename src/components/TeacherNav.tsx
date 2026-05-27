@@ -34,7 +34,13 @@ export default function TeacherNav({ activePage }: { activePage?: TeacherPage })
 
   return (
     <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
-      <Link to="/teacher" className="text-lg font-semibold text-indigo-700 dark:text-indigo-400">EduTrack</Link>
+      {activePage && activePage !== 'dashboard'
+        ? <Link to="/teacher" className="flex items-center gap-1 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4"><path fillRule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clipRule="evenodd" /></svg>
+            Dashboard
+          </Link>
+        : <Link to="/teacher" className="text-lg font-semibold text-indigo-700 dark:text-indigo-400">EduTrack</Link>
+      }
       <div className="flex items-center gap-2">
         <Link to="/teacher/grades" className={link('grades')}>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
