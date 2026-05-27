@@ -1,8 +1,8 @@
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
-import rateLimit from 'express-rate-limit'
 import dotenv from 'dotenv'
+import { loginLimiter, registerLimiter, apiLimiter } from './middleware/rateLimiter.js'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 
@@ -34,6 +34,23 @@ import { createCalendarEvent } from './services/google.service.js'
 import { PrismaClient } from '@prisma/client'
 dotenv.config()
 
+if (process.env.NODE_ENV === 'production') {
+  const required = [
+    'DATABASE_URL',
+    'JWT_SECRET',
+    'JWT_REFRESH_SECRET',
+    'ANTHROPIC_API_KEY',
+    'CORS_ORIGIN',
+    'FRONTEND_URL',
+  ]
+  const missing = required.filter(key => !process.env[key])
+  if (missing.length > 0) {
+    console.error('Missing required production env vars:', missing)
+    process.exit(1)
+  }
+  console.log('Production environment validated ✓')
+}
+
 const app = express()
 const PORT = process.env.PORT || 4000
 
@@ -43,54 +60,33 @@ app.set('trust proxy', 1)
 // Security headers (CSP disabled — React SPA with inline scripts)
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }))
 
-// CORS — only allow known origins; null origin allows Electron (file://) and server-to-server
-const allowedOrigins = [
-  'https://edutrack-production-2a6d.up.railway.app',
-  'http://localhost:5173',
-  'http://localhost:4000',
-]
+// CORS — origins from CORS_ORIGIN env var (comma-separated); null origin allows Electron (file://) and server-to-server
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map(o => o.trim())
+  : ['http://localhost:5173', 'http://localhost:4000']
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) callback(null, true)
     else callback(new Error('Not allowed by CORS'))
   },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }))
 
 // Body size limit — prevents payload-based DoS
 app.use(express.json({ limit: '1mb' }))
-
-// Rate limiters
-const loginLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000,
-  max: 10,
-  message: { error: 'Too many login attempts, please try again in 1 minute' },
-  standardHeaders: true,
-  legacyHeaders: false,
-})
-
-const registerLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000,
-  max: 5,
-  message: { error: 'Too many registration attempts, please try again later' },
-  standardHeaders: true,
-  legacyHeaders: false,
-})
-
-const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 500,
-  message: { error: 'Too many requests, please slow down' },
-  standardHeaders: true,
-  legacyHeaders: false,
-})
 
 app.use('/api/auth/login', loginLimiter)
 app.use('/api/auth/register', registerLimiter)
 app.use('/api', apiLimiter)
 
 app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', message: 'EduTrack API is running' })
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV ?? 'development',
+  })
 })
 
 app.use('/api/auth', authRoutes)
