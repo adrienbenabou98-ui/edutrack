@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useAuthStore } from '../../store/auth.store'
-import DarkModeToggle from '../../components/DarkModeToggle'
-import NotificationBell from '../../components/NotificationBell'
-import NavStudentsIcon from '../../components/NavStudentsIcon'
+import TeacherNav from '../../components/TeacherNav'
 import api from '../../api/client'
 
 interface LeaderboardEntry {
@@ -12,11 +9,7 @@ interface LeaderboardEntry {
 interface Classroom { id: string; name: string; classCode: string }
 
 const medals: Record<number, string> = { 1: '🥇', 2: '🥈', 3: '🥉' }
-const NAV = "flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
-
 export default function TeacherRankings() {
-  const user = useAuthStore(s => s.user)
-  const logout = useAuthStore(s => s.logout)
   const [classrooms, setClassrooms] = useState<Classroom[]>([])
   const [leaderboards, setLeaderboards] = useState<Record<string, LeaderboardEntry[]>>({})
   const [loading, setLoading] = useState(true)

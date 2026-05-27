@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import TeacherNav from '../../components/TeacherNav'
 import api from '../../api/client'
 
@@ -15,6 +15,7 @@ const TYPE_LABEL: Record<string, string> = {
 
 
 export default function TeacherAllAssignments() {
+  const navigate = useNavigate()
   const [classrooms, setClassrooms] = useState<{ id: string; name: string }[]>([])
   const [assignments, setAssignments] = useState<Assignment[]>([])
   const [filter, setFilter] = useState<string>('all')

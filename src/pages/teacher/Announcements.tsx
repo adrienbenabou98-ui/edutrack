@@ -1,10 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useAuthStore } from '../../store/auth.store'
+import TeacherNav from '../../components/TeacherNav'
 import api from '../../api/client'
-
-const NAV_CLS = "flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
-const ACTIVE_CLS = "flex items-center gap-1.5 text-sm font-medium text-indigo-600 dark:text-indigo-400 transition-colors"
 
 interface Classroom { id: string; name: string }
 interface Announcement { id: string; title: string; body: string; classroomId: string | null; createdAt: string }
@@ -33,8 +29,6 @@ const TEMPLATES = [
 ]
 
 export default function Announcements() {
-  const user = useAuthStore(s => s.user)
-  const logout = useAuthStore(s => s.logout)
   const [classrooms, setClassrooms] = useState<Classroom[]>([])
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [title, setTitle] = useState('')

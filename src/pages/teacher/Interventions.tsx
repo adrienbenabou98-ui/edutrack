@@ -1,9 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useAuthStore } from '../../store/auth.store'
-import DarkModeToggle from '../../components/DarkModeToggle'
-import NotificationBell from '../../components/NotificationBell'
-import NavStudentsIcon from '../../components/NavStudentsIcon'
+import TeacherNav from '../../components/TeacherNav'
 import api from '../../api/client'
 
 const STAGES = ['MONITORING', 'CONTACTED', 'IMPROVING', 'RESOLVED'] as const
@@ -16,8 +12,6 @@ const STAGE_CONFIG: Record<Stage, { label: string; color: string; bg: string; do
   RESOLVED:   { label: 'Resolved',   color: 'text-gray-500',  bg: 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700',       dot: 'bg-gray-400' },
 }
 
-const NAV = 'flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors'
-
 interface Intervention {
   id: string; studentId: string; classroomId: string; stage: Stage; notes: string | null
   student: { id: string; name: string }
@@ -25,8 +19,6 @@ interface Intervention {
 }
 
 export default function Interventions() {
-  const user = useAuthStore(s => s.user)
-  const logout = useAuthStore(s => s.logout)
   const [interventions, setInterventions] = useState<Intervention[]>([])
   const [editing, setEditing] = useState<Intervention | null>(null)
   const [editNotes, setEditNotes] = useState('')

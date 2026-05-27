@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useBoundaryStore } from '../../store/gradeBoundary.store'
 import GradeCell from '../../components/GradeCell'
 import CurveModal from '../../components/CurveModal'
 import ExternalGradesSection from '../../components/ExternalGradesSection'
-import TermIndicator from '../../components/TermIndicator'
 import TeacherNav from '../../components/TeacherNav'
 import api from '../../api/client'
 
@@ -34,6 +33,7 @@ const CATEGORY_STYLE: Record<string, string> = {
 type GradeTab = 'overview' | 'custom'
 
 export default function GradeTracker() {
+  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { boundaries, loaded: boundariesLoaded, load: loadBoundaries } = useBoundaryStore()
 

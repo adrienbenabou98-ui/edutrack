@@ -1,16 +1,10 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useAuthStore } from '../../store/auth.store'
-import DarkModeToggle from '../../components/DarkModeToggle'
-import NotificationBell from '../../components/NotificationBell'
-import NavStudentsIcon from '../../components/NavStudentsIcon'
+import TeacherNav from '../../components/TeacherNav'
 import api from '../../api/client'
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 const PERIODS = [1, 2, 3, 4, 5, 6]
 const COLORS = ['#6366f1', '#0d9488', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#10b981']
-const NAV = 'flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors'
-
 interface Plan { id: string; dayOfWeek: number; period: number; topic: string; notes: string | null; color: string; classroom: { id: string; name: string } | null }
 interface Classroom { id: string; name: string }
 
@@ -24,8 +18,6 @@ function getMonday(d: Date) {
 }
 
 export default function LessonPlanner() {
-  const user = useAuthStore(s => s.user)
-  const logout = useAuthStore(s => s.logout)
   const [weekStart, setWeekStart] = useState(() => getMonday(new Date()))
   const [plans, setPlans] = useState<Plan[]>([])
   const [classrooms, setClassrooms] = useState<Classroom[]>([])
