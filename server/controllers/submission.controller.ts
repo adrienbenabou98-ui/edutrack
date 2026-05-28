@@ -105,6 +105,7 @@ export async function submitAssignment(req: AuthRequest, res: Response) {
       'GRADED',
       'Your assignment was graded',
       `Your submission for "${assignment.title}" has been graded.`,
+      `/student/submission/${submission.id}`,
     ).catch(() => {})
   }
 

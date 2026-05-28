@@ -74,8 +74,11 @@ export default function StudentAssignments() {
                 <div className="space-y-3">
                   {done.map(a => {
                     const badge = statusBadge(a.submissions)
+                    const dest = a.submissions[0]?.status === 'GRADED'
+                      ? `/student/submission/${a.submissions[0].id}`
+                      : `/student/assignment/${a.id}`
                     return (
-                      <div key={a.id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-4 opacity-75">
+                      <Link key={a.id} to={dest} className="block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-4 opacity-75 hover:opacity-100 hover:border-teal-300 hover:shadow-sm transition-all">
                         <div className="flex items-start justify-between">
                           <div>
                             <h3 className="font-medium text-gray-900 dark:text-white">{a.title}</h3>
@@ -83,7 +86,7 @@ export default function StudentAssignments() {
                           </div>
                           <span className={`text-xs px-2 py-1 rounded-full font-medium ${badge.color}`}>{badge.label}</span>
                         </div>
-                      </div>
+                      </Link>
                     )
                   })}
                 </div>

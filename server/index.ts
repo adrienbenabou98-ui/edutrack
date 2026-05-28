@@ -178,7 +178,7 @@ async function runDailyReminders() {
           where: {
             userId: studentId,
             type: 'ASSIGNMENT_REMINDER',
-            title: { contains: assignment.id },
+            message: { contains: assignment.id },
           },
         })
         if (already) continue
@@ -186,8 +186,9 @@ async function runDailyReminders() {
           data: {
             userId: studentId,
             type: 'ASSIGNMENT_REMINDER',
-            title: assignment.id,
-            message: `Reminder: "${assignment.title}" is due ${assignment.dueDate ? new Date(assignment.dueDate).toLocaleDateString() : 'soon'}.`,
+            title: `Due soon: ${assignment.title}`,
+            message: `[${assignment.id}] "${assignment.title}" is due ${assignment.dueDate ? new Date(assignment.dueDate).toLocaleDateString() : 'soon'}.`,
+            link: `/student/assignment/${assignment.id}`,
           },
         })
 

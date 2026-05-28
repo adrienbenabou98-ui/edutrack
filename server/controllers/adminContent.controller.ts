@@ -55,6 +55,7 @@ export async function overrideGrade(req: AuthRequest, res: Response) {
       'GRADED',
       'Your assignment was graded',
       `Your submission for "${submission.assignment.title}" has been graded.`,
+      `/student/submission/${id}`,
     ).catch(() => {})
   }
 }
