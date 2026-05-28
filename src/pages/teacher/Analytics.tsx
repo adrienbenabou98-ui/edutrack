@@ -18,9 +18,7 @@ export default function Analytics({ classroomId: propId }: { classroomId?: strin
   const [data, setData] = useState<AnalyticsData | null>(null)
   const [insight, setInsight] = useState<string | null>(null)
   const [loadingInsight, setLoadingInsight] = useState(false)
-  const [query, setQuery] = useState('')
-  const [answer, setAnswer] = useState<string | null>(null)
-  const [loadingAnswer, setLoadingAnswer] = useState(false)
+  const [insightError, setInsightError] = useState<string | null>(null)
 
   useEffect(() => {
     if (classroomId) api.get(`/analytics/classroom/${classroomId}`).then(r => setData(r.data))
@@ -28,18 +26,16 @@ export default function Analytics({ classroomId: propId }: { classroomId?: strin
 
   async function loadInsight() {
     setLoadingInsight(true)
-    const r = await api.get(`/analytics/classroom/${classroomId}/insight`)
-    setInsight(r.data.insight)
-    setLoadingInsight(false)
-  }
-
-  async function askClaude(e: React.FormEvent) {
-    e.preventDefault()
-    if (!query.trim()) return
-    setLoadingAnswer(true)
-    const r = await api.post(`/analytics/classroom/${classroomId}/query`, { query })
-    setAnswer(r.data.answer)
-    setLoadingAnswer(false)
+    setInsightError(null)
+    try {
+      const r = await api.get(`/analytics/classroom/${classroomId}/insight`)
+      setInsight(r.data.insight)
+    } catch (err: any) {
+      const msg = err?.response?.data?.error ?? err?.message ?? 'Failed to generate insight. Please try again.'
+      setInsightError(msg)
+    } finally {
+      setLoadingInsight(false)
+    }
   }
 
   async function exportCSV() {
@@ -109,32 +105,18 @@ export default function Analytics({ classroomId: propId }: { classroomId?: strin
             {loadingInsight ? 'Generating…' : 'Generate insight'}
           </button>
         </div>
-        {insight ? (
+        {insightError ? (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <span className="text-xs font-semibold text-red-700 uppercase tracking-wide bg-red-100 px-2 py-0.5 rounded">Error</span>
+            <p className="text-sm text-red-800 leading-relaxed mt-2">{insightError}</p>
+          </div>
+        ) : insight ? (
           <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
             <span className="text-xs font-semibold text-indigo-700 uppercase tracking-wide bg-indigo-100 px-2 py-0.5 rounded">AI Insight</span>
             <p className="text-sm text-indigo-900 leading-relaxed mt-2">{insight}</p>
           </div>
         ) : (
           <p className="text-sm text-gray-400">Click "Generate insight" to get an AI summary of your class performance.</p>
-        )}
-      </div>
-
-      <div className="bg-white border border-gray-200 rounded-xl p-5">
-        <h3 className="font-semibold text-gray-900 mb-3">Ask Claude about your class</h3>
-        <form onSubmit={askClaude} className="flex gap-3">
-          <input value={query} onChange={e => setQuery(e.target.value)}
-            className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            placeholder="e.g. Which students need the most support this week?" />
-          <button type="submit" disabled={loadingAnswer}
-            className="btn-3d-indigo disabled:opacity-50">
-            {loadingAnswer ? '…' : 'Ask'}
-          </button>
-        </form>
-        {answer && (
-          <div className="mt-3 bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-            <span className="text-xs font-semibold text-indigo-700 uppercase tracking-wide bg-indigo-100 px-2 py-0.5 rounded">AI Insight</span>
-            <p className="text-sm text-indigo-900 leading-relaxed mt-2">{answer}</p>
-          </div>
         )}
       </div>
 

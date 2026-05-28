@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { BrowserRouter, HashRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, HashRouter, Routes, Route, Navigate, Link } from 'react-router-dom'
 import { useAuthStore } from './store/auth.store'
 import ProtectedRoute from './components/ProtectedRoute'
 import ErrorBoundary from './components/ErrorBoundary'
@@ -28,9 +28,11 @@ import AdminAnalytics from './pages/admin/Analytics'
 import AdminPlatformSettings from './pages/admin/PlatformSettings'
 import AdminSecurity from './pages/admin/Security'
 import AnnouncementBanner from './components/AnnouncementBanner'
+import UpdateBanner from './components/UpdateBanner'
 import ElectronTitleBar from './components/ElectronTitleBar'
 import StudentDashboard from './pages/student/Dashboard'
 import TakeAssignment from './pages/student/TakeAssignment'
+import SubmissionDetail from './pages/SubmissionDetail'
 import StudentProgress from './pages/student/Progress'
 import StudentRankings from './pages/student/Rankings'
 import StudentAssignments from './pages/student/Assignments'
@@ -53,6 +55,7 @@ export default function App() {
       <ElectronTitleBar />
       <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar">
       <AnnouncementBanner />
+      <UpdateBanner />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -72,6 +75,7 @@ export default function App() {
         <Route path="/teacher/interventions" element={<ProtectedRoute role="TEACHER"><TeacherInterventions /></ProtectedRoute>} />
         <Route path="/teacher/announcements" element={<ProtectedRoute role="TEACHER"><TeacherAnnouncements /></ProtectedRoute>} />
         <Route path="/teacher/calendar" element={<ProtectedRoute role="TEACHER"><TeacherCalendar /></ProtectedRoute>} />
+        <Route path="/teacher/submission/:id" element={<ProtectedRoute role="TEACHER"><SubmissionDetail role="TEACHER" /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute role="ADMIN"><AdminUsers /></ProtectedRoute>} />
         <Route path="/admin/users" element={<ProtectedRoute role="ADMIN"><AdminUsers /></ProtectedRoute>} />
         <Route path="/admin/classrooms" element={<ProtectedRoute role="ADMIN"><AdminClassrooms /></ProtectedRoute>} />
@@ -81,6 +85,7 @@ export default function App() {
         <Route path="/admin/security" element={<ProtectedRoute role="ADMIN"><AdminSecurity /></ProtectedRoute>} />
         <Route path="/student" element={<ProtectedRoute role="STUDENT"><StudentDashboard /></ProtectedRoute>} />
         <Route path="/student/assignment/:id" element={<ProtectedRoute role="STUDENT"><TakeAssignment /></ProtectedRoute>} />
+        <Route path="/student/submission/:id" element={<ProtectedRoute role="STUDENT"><SubmissionDetail role="STUDENT" /></ProtectedRoute>} />
         <Route path="/student/progress" element={<ProtectedRoute role="STUDENT"><StudentProgressPage /></ProtectedRoute>} />
         <Route path="/student/rankings" element={<ProtectedRoute role="STUDENT"><StudentRankings /></ProtectedRoute>} />
         <Route path="/student/assignments" element={<ProtectedRoute role="STUDENT"><StudentAssignments /></ProtectedRoute>} />
@@ -100,6 +105,12 @@ function AnalyticsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-5xl mx-auto px-6 py-8">
+        <div className="mb-6">
+          <Link to="/teacher"
+            className="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700">
+            ← Dashboard
+          </Link>
+        </div>
         <TeacherAnalytics />
       </div>
     </div>

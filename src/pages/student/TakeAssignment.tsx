@@ -5,10 +5,14 @@ import api from '../../api/client'
 interface Question {
   id: string; text: string; type: string; options: string[] | null; points: number
 }
+interface PriorSubmission {
+  id: string; status: string; totalScore: number | null; resubmissionCount: number
+}
 interface Assignment {
   id: string; title: string; instructions: string; type: string
+  resubmissionsAllowed: boolean; maxResubmissions: number
   questions: Question[]
-  submissions: { id: string; status: string; totalScore: number | null }[]
+  submissions: PriorSubmission[]
 }
 
 export default function TakeAssignment() {
@@ -18,6 +22,8 @@ export default function TakeAssignment() {
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState<{ totalScore: number } | null>(null)
+  const [resubmitMode, setResubmitMode] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     api.get(`/assignments/${id}`).then(r => setAssignment(r.data))
@@ -30,6 +36,7 @@ export default function TakeAssignment() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSubmitting(true)
+    setError(null)
     try {
       const payload = {
         assignmentId: id,
@@ -37,12 +44,62 @@ export default function TakeAssignment() {
       }
       const { data } = await api.post('/submissions', payload)
       setResult({ totalScore: data.totalScore })
+    } catch (err: any) {
+      setError(err?.response?.data?.error ?? 'Could not submit. Please try again.')
     } finally {
       setSubmitting(false)
     }
   }
 
   if (!assignment) return <div className="min-h-screen flex items-center justify-center text-gray-400">Loading…</div>
+
+  const prior = assignment.submissions?.[0]
+  const resubmitsLeft = assignment.maxResubmissions - (prior?.resubmissionCount ?? 0)
+  const canResubmit = assignment.resubmissionsAllowed && resubmitsLeft > 0
+
+  // Student has already submitted and is not currently resubmitting — show their
+  // submitted work with options to view it or (if allowed) resubmit.
+  if (prior && !resubmitMode && !result) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <nav className="bg-white border-b border-gray-200 px-6 py-4 flex items-center gap-4">
+          <button onClick={() => navigate('/student')} className="text-sm text-gray-500 hover:text-gray-700">← Back</button>
+          <span className="text-lg font-semibold text-gray-900">{assignment.title}</span>
+        </nav>
+        <main className="max-w-2xl mx-auto px-6 py-8">
+          <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center">
+            <p className="text-gray-600 mb-2">You have already submitted this assignment.</p>
+            {prior.totalScore !== null && (
+              <div className={`text-5xl font-bold my-3 ${prior.totalScore >= 70 ? 'text-teal-600' : 'text-orange-500'}`}>
+                {prior.totalScore.toFixed(0)}%
+              </div>
+            )}
+            {assignment.resubmissionsAllowed && (
+              <p className="text-sm text-gray-400 mb-6">
+                Resubmissions used: {prior.resubmissionCount} of {assignment.maxResubmissions}
+              </p>
+            )}
+            <div className="flex flex-col gap-3 max-w-xs mx-auto">
+              <button onClick={() => navigate(`/student/submission/${prior.id}`)}
+                className="btn-3d-teal px-6">
+                View my submission
+              </button>
+              {canResubmit ? (
+                <button onClick={() => { setResubmitMode(true); setAnswers({}); setError(null) }}
+                  className="px-6 py-2 border border-teal-300 text-teal-700 rounded-lg text-sm font-medium hover:bg-teal-50">
+                  Resubmit ({resubmitsLeft} left)
+                </button>
+              ) : assignment.resubmissionsAllowed ? (
+                <p className="text-xs text-gray-400">No resubmissions remaining.</p>
+              ) : null}
+              <button onClick={() => navigate('/student')}
+                className="text-sm text-gray-500 hover:text-gray-700">Back to Dashboard</button>
+            </div>
+          </div>
+        </main>
+      </div>
+    )
+  }
 
   if (result) {
     return (
@@ -115,10 +172,13 @@ export default function TakeAssignment() {
               <p className="text-xs text-gray-400 mt-3 text-right">{q.points} pts</p>
             </div>
           ))}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-800">{error}</div>
+          )}
           <div className="flex justify-end pb-8">
             <button type="submit" disabled={submitting}
               className="btn-3d-teal px-6 py-2.5 disabled:opacity-50">
-              {submitting ? 'Submitting…' : 'Submit Assignment'}
+              {submitting ? 'Submitting…' : resubmitMode ? 'Resubmit Assignment' : 'Submit Assignment'}
             </button>
           </div>
         </main>

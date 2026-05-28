@@ -5,7 +5,7 @@ import { createNotification } from './notification.controller.js'
 import { createCalendarEvent } from '../services/google.service.js'
 
 export async function createAssignment(req: AuthRequest, res: Response) {
-  const { classroomId, title, instructions, type, dueDate, totalPoints, timeLimit, questions, subject, unitName } = req.body
+  const { classroomId, title, instructions, type, dueDate, totalPoints, timeLimit, questions, subject, unitName, resubmissionsAllowed, maxResubmissions } = req.body
   if (!classroomId || !title || !type) {
     res.status(400).json({ error: 'classroomId, title, and type are required' }); return
   }
@@ -24,6 +24,8 @@ export async function createAssignment(req: AuthRequest, res: Response) {
       timeLimit: timeLimit ?? null,
       subject: subject ?? null,
       unitName: unitName ?? null,
+      resubmissionsAllowed: resubmissionsAllowed ?? false,
+      maxResubmissions: maxResubmissions ?? 0,
       questions: questions?.length ? {
         create: questions.map((q: any) => ({
           text: q.text,
@@ -70,7 +72,15 @@ export async function getAssignment(req: AuthRequest, res: Response) {
   if (user.role === 'TEACHER' && assignment.classroom.teacherId === user.id) { res.json(assignment); return }
   if (user.role === 'STUDENT') {
     const enrolled = await prisma.enrollment.findFirst({ where: { classroomId: assignment.classroomId, studentId: user.id } })
-    if (enrolled) { res.json(assignment); return }
+    if (enrolled) {
+      // Include only this student's own submission so they can view/resubmit.
+      const mySubmission = await prisma.submission.findFirst({
+        where: { assignmentId: assignment.id, studentId: user.id },
+        select: { id: true, status: true, totalScore: true, resubmissionCount: true, submittedAt: true },
+      })
+      res.json({ ...assignment, submissions: mySubmission ? [mySubmission] : [] })
+      return
+    }
   }
   res.status(403).json({ error: 'Forbidden' })
 }

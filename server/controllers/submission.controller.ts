@@ -12,41 +12,91 @@ export async function submitAssignment(req: AuthRequest, res: Response) {
   if (!assignmentId || !answers) {
     res.status(400).json({ error: 'assignmentId and answers are required' }); return
   }
-  const existing = await prisma.submission.findFirst({
-    where: { assignmentId, studentId: req.user!.id },
-  })
-  if (existing) { res.status(409).json({ error: 'Already submitted' }); return }
 
   const assignment = await prisma.assignment.findUnique({
     where: { id: assignmentId },
     include: {
       questions: true,
       rubric: { include: { criteria: { orderBy: { order: 'asc' } } } },
+      classroom: { select: { teacherId: true } },
     },
   })
   if (!assignment) { res.status(404).json({ error: 'Assignment not found' }); return }
 
+  // A student may have a previous submission. Decide whether this is a first
+  // submission or an allowed resubmission.
+  const existing = await prisma.submission.findFirst({
+    where: { assignmentId, studentId: req.user!.id },
+  })
+  const isResubmission = !!existing
+  if (existing) {
+    if (!assignment.resubmissionsAllowed) {
+      res.status(409).json({ error: 'Resubmissions are not allowed for this assignment.' }); return
+    }
+    if (existing.resubmissionCount >= assignment.maxResubmissions) {
+      res.status(409).json({
+        error: `You have reached the maximum of ${assignment.maxResubmissions} resubmission(s).`,
+      }); return
+    }
+  }
+
   const { gradedAnswers, totalScore } = gradeSubmission(assignment.questions, answers)
 
-  const submission = await prisma.submission.create({
-    data: {
-      assignmentId,
-      studentId: req.user!.id,
-      totalScore,
-      status: 'SUBMITTED',
-      answers: {
-        create: gradedAnswers.map(a => ({
-          questionId: a.questionId,
-          responseText: a.responseText,
-          isCorrect: a.isCorrect,
-          pointsAwarded: a.pointsAwarded,
-        })),
+  let submission
+  if (existing) {
+    // Replace the prior answers and bump the resubmission counter.
+    await prisma.answer.deleteMany({ where: { submissionId: existing.id } })
+    submission = await prisma.submission.update({
+      where: { id: existing.id },
+      data: {
+        totalScore,
+        status: 'SUBMITTED',
+        submittedAt: new Date(),
+        resubmissionCount: existing.resubmissionCount + 1,
+        answers: {
+          create: gradedAnswers.map(a => ({
+            questionId: a.questionId,
+            responseText: a.responseText,
+            isCorrect: a.isCorrect,
+            pointsAwarded: a.pointsAwarded,
+          })),
+        },
       },
-    },
-    include: { answers: true },
-  })
+      include: { answers: true },
+    })
+  } else {
+    submission = await prisma.submission.create({
+      data: {
+        assignmentId,
+        studentId: req.user!.id,
+        totalScore,
+        status: 'SUBMITTED',
+        answers: {
+          create: gradedAnswers.map(a => ({
+            questionId: a.questionId,
+            responseText: a.responseText,
+            isCorrect: a.isCorrect,
+            pointsAwarded: a.pointsAwarded,
+          })),
+        },
+      },
+      include: { answers: true },
+    })
+  }
 
   res.status(201).json(submission)
+
+  // Notify the teacher that a student submitted (or resubmitted).
+  if (assignment.classroom?.teacherId) {
+    const student = await prisma.user.findUnique({ where: { id: req.user!.id }, select: { name: true } })
+    createNotification(
+      assignment.classroom.teacherId,
+      'SUBMISSION',
+      isResubmission ? 'A student resubmitted work' : 'New submission received',
+      `${student?.name ?? 'A student'} ${isResubmission ? 'resubmitted' : 'submitted'} "${assignment.title}".`,
+      `/teacher/submission/${submission.id}`,
+    ).catch(() => {})
+  }
 
   // Notify student their assignment was graded (for auto-graded submissions)
   if (totalScore !== null) {
@@ -88,10 +138,20 @@ export async function submitAssignment(req: AuthRequest, res: Response) {
 export async function getSubmission(req: AuthRequest, res: Response) {
   const submission = await prisma.submission.findUnique({
     where: { id: req.params.id },
-    include: { answers: { include: { question: true } }, feedback: true },
+    include: {
+      answers: { include: { question: true } },
+      feedback: true,
+      student: { select: { id: true, name: true, email: true } },
+      assignment: { include: { classroom: { select: { teacherId: true } } } },
+    },
   })
   if (!submission) { res.status(404).json({ error: 'Not found' }); return }
+  // Students may only read their own submission.
   if (req.user!.role === 'STUDENT' && submission.studentId !== req.user!.id) {
+    res.status(403).json({ error: 'Forbidden' }); return
+  }
+  // Teachers may only read submissions in their own classrooms.
+  if (req.user!.role === 'TEACHER' && submission.assignment.classroom.teacherId !== req.user!.id) {
     res.status(403).json({ error: 'Forbidden' }); return
   }
   res.json(submission)

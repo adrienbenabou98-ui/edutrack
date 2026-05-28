@@ -89,6 +89,16 @@ app.get('/health', (_req, res) => {
   })
 })
 
+// Public build-version endpoint used by the frontend to detect new deployments
+// and prompt active users to refresh. Exposes ONLY the version string — no env
+// vars, no secrets, no user data — so it is safe to call unauthenticated.
+const APP_VERSION = process.env.RAILWAY_GIT_COMMIT_SHA
+  ?? process.env.npm_package_version
+  ?? 'dev'
+app.get('/api/version', (_req, res) => {
+  res.json({ version: APP_VERSION })
+})
+
 app.use('/api/auth', authRoutes)
 app.use('/api/classrooms', classroomRoutes)
 app.use('/api/assignments', assignmentRoutes)
@@ -197,6 +207,47 @@ async function runDailyReminders() {
           }
         }).catch(() => {})
       }
+    }
+
+    // Notify teachers about assignments that went past their due date with
+    // missing submissions. Only look at the last 24h so each is flagged once.
+    const dayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+    const justOverdue = await prismaScheduler.assignment.findMany({
+      where: {
+        status: 'PUBLISHED',
+        dueDate: { gte: dayAgo, lt: now },
+      },
+      include: {
+        classroom: {
+          select: { teacherId: true, enrollments: { select: { studentId: true } } },
+        },
+        submissions: { select: { studentId: true } },
+      },
+    })
+
+    for (const assignment of justOverdue) {
+      const submittedIds = new Set(assignment.submissions.map(s => s.studentId))
+      const missingCount = assignment.classroom.enrollments
+        .filter(e => !submittedIds.has(e.studentId)).length
+      if (missingCount === 0) continue
+
+      const already = await prismaScheduler.notification.findFirst({
+        where: {
+          userId: assignment.classroom.teacherId,
+          type: 'LATE_SUBMISSIONS',
+          title: assignment.id,
+        },
+      })
+      if (already) continue
+
+      await prismaScheduler.notification.create({
+        data: {
+          userId: assignment.classroom.teacherId,
+          type: 'LATE_SUBMISSIONS',
+          title: assignment.id,
+          message: `"${assignment.title}" is past due with ${missingCount} missing submission${missingCount === 1 ? '' : 's'}.`,
+        },
+      })
     }
   } catch {
     // Scheduler errors must not crash the server

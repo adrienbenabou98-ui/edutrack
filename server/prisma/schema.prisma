@@ -139,6 +139,8 @@ model Assignment {
   subject      String?
   unitName     String?
   rubricId     String?
+  resubmissionsAllowed Boolean  @default(false)
+  maxResubmissions     Int      @default(0)
   createdAt    DateTime         @default(now())
 
   classroom   Classroom    @relation(fields: [classroomId], references: [id])
@@ -170,6 +172,7 @@ model Submission {
   curvedScore       Float?
   curveNote         String?
   status            SubmissionStatus @default(SUBMITTED)
+  resubmissionCount Int              @default(0)
   plagiarismFlag    Boolean          @default(false)
   plagiarismReport  String?
 

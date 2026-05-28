@@ -5,7 +5,10 @@ export function validate(schema: ZodSchema) {
   return (req: Request, res: Response, next: NextFunction) => {
     const result = schema.safeParse(req.body)
     if (!result.success) {
-      const errors = (result.error as ZodError).errors.map(e => ({
+      // Zod v4 renamed `.errors` to `.issues`; fall back for safety across versions.
+      const zodErr = result.error as ZodError
+      const issues = (zodErr.issues ?? (zodErr as any).errors ?? [])
+      const errors = issues.map(e => ({
         field: e.path.join('.'),
         message: e.message,
       }))

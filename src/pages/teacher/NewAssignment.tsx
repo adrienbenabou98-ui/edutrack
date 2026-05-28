@@ -27,6 +27,8 @@ export default function NewAssignment() {
   const [unitName, setUnitName] = useState('')
   const [rubricId, setRubricId] = useState('')
   const [rubrics, setRubrics] = useState<Rubric[]>([])
+  const [resubmissionsAllowed, setResubmissionsAllowed] = useState(false)
+  const [maxResubmissions, setMaxResubmissions] = useState(1)
   const [questions, setQuestions] = useState<Question[]>([emptyQuestion()])
   const [saving, setSaving] = useState(false)
 
@@ -55,6 +57,8 @@ export default function NewAssignment() {
         subject: subject || null,
         unitName: unitName || null,
         rubricId: rubricId || null,
+        resubmissionsAllowed,
+        maxResubmissions: resubmissionsAllowed ? Math.max(1, maxResubmissions) : 0,
         questions: questions.map(q => ({
           text: q.text,
           type: q.type,
@@ -132,6 +136,22 @@ export default function NewAssignment() {
               </select>
             </div>
           )}
+          <div className="border-t border-gray-100 pt-4">
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
+              <input type="checkbox" checked={resubmissionsAllowed}
+                onChange={e => setResubmissionsAllowed(e.target.checked)} />
+              Allow students to resubmit
+            </label>
+            <p className="text-xs text-gray-400 mt-1">Students can view their submitted work at any time. If enabled, they may also resubmit up to the limit below.</p>
+            {resubmissionsAllowed && (
+              <div className="mt-3 flex items-center gap-2">
+                <label className="text-sm text-gray-600">Max resubmissions</label>
+                <input type="number" min={1} value={maxResubmissions}
+                  onChange={e => setMaxResubmissions(Math.max(1, Number(e.target.value)))}
+                  className="w-20 border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="space-y-4">

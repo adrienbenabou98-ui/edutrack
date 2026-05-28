@@ -68,22 +68,3 @@ Be concise and actionable.`
 
   return (message.content[0] as { type: string; text: string }).text
 }
-
-export async function answerTeacherQuery(query: string, classContext: string): Promise<string> {
-  const prompt = `You are an AI assistant helping a teacher analyse student performance.
-
-Class context:
-${classContext}
-
-Teacher's question: ${query}
-
-Answer concisely and helpfully based only on the provided data.`
-
-  const message = await client.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 400,
-    messages: [{ role: 'user', content: prompt }],
-  })
-
-  return (message.content[0] as { type: string; text: string }).text
-}
