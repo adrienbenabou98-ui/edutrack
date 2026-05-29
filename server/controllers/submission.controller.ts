@@ -184,6 +184,61 @@ export async function getMySubmissions(req: AuthRequest, res: Response) {
   res.json(submissions)
 }
 
+export async function teacherGrade(req: AuthRequest, res: Response) {
+  const { id } = req.params
+  const { grades, teacherNote } = req.body
+
+  const submission = await prisma.submission.findUnique({
+    where: { id },
+    include: {
+      assignment: { select: { title: true, classroom: { select: { teacherId: true } } } },
+    },
+  })
+  if (!submission) { res.status(404).json({ error: 'Not found' }); return }
+  if (submission.assignment.classroom.teacherId !== req.user!.id) {
+    res.status(403).json({ error: 'Forbidden' }); return
+  }
+
+  if (Array.isArray(grades)) {
+    await Promise.all(
+      (grades as { answerId: string; pointsAwarded: number }[]).map(g =>
+        prisma.answer.update({
+          where: { id: g.answerId },
+          data: { pointsAwarded: Math.max(0, Number(g.pointsAwarded)) },
+        })
+      )
+    )
+  }
+
+  const answers = await prisma.answer.findMany({
+    where: { submissionId: id },
+    include: { question: { select: { points: true } } },
+  })
+  const totalPoints = answers.reduce((s, a) => s + a.question.points, 0)
+  const earned = answers.reduce((s, a) => s + (a.pointsAwarded ?? 0), 0)
+  const totalScore = totalPoints > 0 ? (earned / totalPoints) * 100 : 0
+
+  await prisma.submission.update({ where: { id }, data: { totalScore, status: 'GRADED' } })
+
+  if (teacherNote !== undefined) {
+    await prisma.feedback.upsert({
+      where: { submissionId: id },
+      create: { submissionId: id, teacherNote: String(teacherNote) },
+      update: { teacherNote: String(teacherNote) },
+    })
+  }
+
+  createNotification(
+    submission.studentId,
+    'GRADED',
+    'Your assignment was graded',
+    `Your submission for "${submission.assignment.title}" has been graded. Score: ${totalScore.toFixed(0)}%`,
+    `/student/submission/${id}`,
+  ).catch(() => {})
+
+  res.json({ ok: true, totalScore })
+}
+
 export async function dismissPlagiarism(req: AuthRequest, res: Response) {
   const submission = await prisma.submission.findUnique({
     where: { id: req.params.id },

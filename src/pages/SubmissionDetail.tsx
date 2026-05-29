@@ -15,10 +15,10 @@ interface Submission {
   status: string
   resubmissionCount: number
   submittedAt: string
-  student?: { id: string; name: string; email: string }
+  student?: { id: string; name: string }
   assignment: { title: string; totalPoints: number }
   answers: Answer[]
-  feedback?: { aiSuggestion: string } | null
+  feedback?: { aiSuggestion: string | null; teacherNote: string | null } | null
 }
 
 export default function SubmissionDetail({ role }: { role: 'STUDENT' | 'TEACHER' }) {
@@ -26,14 +26,47 @@ export default function SubmissionDetail({ role }: { role: 'STUDENT' | 'TEACHER'
   const navigate = useNavigate()
   const [submission, setSubmission] = useState<Submission | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [editedPoints, setEditedPoints] = useState<Record<string, number>>({})
+  const [teacherNote, setTeacherNote] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [saveMsg, setSaveMsg] = useState<string | null>(null)
 
   useEffect(() => {
     api.get(`/submissions/${id}`)
-      .then(r => setSubmission(r.data))
+      .then(r => {
+        setSubmission(r.data)
+        if (role === 'TEACHER') {
+          const pts: Record<string, number> = {}
+          r.data.answers.forEach((a: Answer) => {
+            if (a.pointsAwarded !== null) pts[a.id] = a.pointsAwarded
+          })
+          setEditedPoints(pts)
+          setTeacherNote(r.data.feedback?.teacherNote ?? '')
+        }
+      })
       .catch(err => setError(err?.response?.data?.error ?? 'Could not load this submission.'))
   }, [id])
 
   const backTo = role === 'TEACHER' ? '/teacher' : '/student'
+
+  async function saveGrade() {
+    setSaving(true)
+    setSaveMsg(null)
+    try {
+      const grades = submission!.answers
+        .filter(a => a.isCorrect === null)
+        .map(a => ({ answerId: a.id, pointsAwarded: editedPoints[a.id] ?? 0 }))
+      const res = await api.put(`/submissions/${id}/grade`, { grades, teacherNote })
+      setSaveMsg(`Saved — Score: ${res.data.totalScore.toFixed(0)}%`)
+      const updated = await api.get(`/submissions/${id}`)
+      setSubmission(updated.data)
+    } catch {
+      setSaveMsg('Failed to save — please try again.')
+    } finally {
+      setSaving(false)
+      setTimeout(() => setSaveMsg(null), 4000)
+    }
+  }
 
   if (error) {
     return (
@@ -45,13 +78,20 @@ export default function SubmissionDetail({ role }: { role: 'STUDENT' | 'TEACHER'
   }
   if (!submission) return <div className="min-h-screen flex items-center justify-center text-gray-400">Loading…</div>
 
+  const hasManualQuestions = submission.answers.some(a => a.isCorrect === null)
+
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-200 px-6 py-4 flex items-center gap-4">
         <button onClick={() => navigate(backTo)} className="text-sm text-gray-500 hover:text-gray-700">← Back</button>
         <span className="text-lg font-semibold text-gray-900">{submission.assignment.title}</span>
+        {role === 'TEACHER' && hasManualQuestions && submission.status !== 'GRADED' && (
+          <span className="ml-auto text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-medium">Needs grading</span>
+        )}
       </nav>
+
       <main className="max-w-2xl mx-auto px-6 py-8 space-y-6">
+        {/* Header card */}
         <div className="bg-white border border-gray-200 rounded-xl p-5 flex items-center justify-between">
           <div>
             {role === 'TEACHER' && submission.student && (
@@ -69,6 +109,7 @@ export default function SubmissionDetail({ role }: { role: 'STUDENT' | 'TEACHER'
           )}
         </div>
 
+        {/* AI feedback */}
         {submission.feedback?.aiSuggestion && (
           <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4">
             <span className="text-xs font-semibold text-indigo-700 uppercase tracking-wide bg-indigo-100 px-2 py-0.5 rounded">AI Feedback</span>
@@ -76,6 +117,15 @@ export default function SubmissionDetail({ role }: { role: 'STUDENT' | 'TEACHER'
           </div>
         )}
 
+        {/* Teacher note (visible to student) */}
+        {role === 'STUDENT' && submission.feedback?.teacherNote && (
+          <div className="bg-teal-50 border border-teal-200 rounded-xl p-4">
+            <span className="text-xs font-semibold text-teal-700 uppercase tracking-wide bg-teal-100 px-2 py-0.5 rounded">Teacher Note</span>
+            <p className="text-sm text-teal-900 leading-relaxed mt-2">{submission.feedback.teacherNote}</p>
+          </div>
+        )}
+
+        {/* Answers */}
         <div className="space-y-4">
           {submission.answers.map((a, i) => (
             <div key={a.id} className="bg-white border border-gray-200 rounded-xl p-5">
@@ -90,10 +140,27 @@ export default function SubmissionDetail({ role }: { role: 'STUDENT' | 'TEACHER'
                   <span className={a.isCorrect ? 'text-teal-600 font-medium' : 'text-orange-600 font-medium'}>
                     {a.isCorrect ? '✓ Correct' : '✗ Incorrect'}
                   </span>
-                ) : <span className="text-gray-400">Manually graded</span>}
-                <span className="text-gray-400">
-                  {a.pointsAwarded ?? 0} / {a.question.points} pts
-                </span>
+                ) : (
+                  <span className="text-gray-400 italic">{role === 'TEACHER' ? 'Set points →' : 'Manually graded'}</span>
+                )}
+                <div className="flex items-center gap-2">
+                  {role === 'TEACHER' && a.isCorrect === null ? (
+                    <input
+                      type="number"
+                      min={0}
+                      max={a.question.points}
+                      value={editedPoints[a.id] ?? 0}
+                      onChange={e => setEditedPoints(p => ({
+                        ...p,
+                        [a.id]: Math.min(a.question.points, Math.max(0, Number(e.target.value))),
+                      }))}
+                      className="w-16 border border-gray-300 rounded px-2 py-0.5 text-xs text-center focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  ) : (
+                    <span className="text-gray-400">{a.pointsAwarded ?? 0}</span>
+                  )}
+                  <span className="text-gray-400">/ {a.question.points} pts</span>
+                </div>
               </div>
               {role === 'TEACHER' && !a.isCorrect && a.question.correctAnswer && (
                 <p className="text-xs text-gray-400 mt-2">Expected: {a.question.correctAnswer}</p>
@@ -101,6 +168,35 @@ export default function SubmissionDetail({ role }: { role: 'STUDENT' | 'TEACHER'
             </div>
           ))}
         </div>
+
+        {/* Teacher grading panel */}
+        {role === 'TEACHER' && (
+          <div className="bg-white border border-gray-200 rounded-xl p-5 space-y-4">
+            <h3 className="text-sm font-semibold text-gray-800">Grading</h3>
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">
+                Note for student <span className="text-gray-400 font-normal">(optional — shown on their submission view)</span>
+              </label>
+              <textarea
+                value={teacherNote}
+                onChange={e => setTeacherNote(e.target.value)}
+                rows={3}
+                placeholder="Add feedback or a comment…"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              {saveMsg ? (
+                <span className={`text-sm font-medium ${saveMsg.startsWith('Saved') ? 'text-teal-600' : 'text-red-500'}`}>
+                  {saveMsg}
+                </span>
+              ) : <span />}
+              <button onClick={saveGrade} disabled={saving} className="btn-3d-indigo px-5 disabled:opacity-50">
+                {saving ? 'Saving…' : 'Save Grade'}
+              </button>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   )

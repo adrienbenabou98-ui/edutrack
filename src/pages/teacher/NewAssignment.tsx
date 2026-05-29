@@ -136,22 +136,28 @@ export default function NewAssignment() {
               </select>
             </div>
           )}
-          <div className="border-t border-gray-100 pt-4">
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
-              <input type="checkbox" checked={resubmissionsAllowed}
-                onChange={e => setResubmissionsAllowed(e.target.checked)} />
-              Allow students to resubmit
-            </label>
-            <p className="text-xs text-gray-400 mt-1">Students can view their submitted work at any time. If enabled, they may also resubmit up to the limit below.</p>
-            {resubmissionsAllowed && (
-              <div className="mt-3 flex items-center gap-2">
-                <label className="text-sm text-gray-600">Max resubmissions</label>
-                <input type="number" min={1} value={maxResubmissions}
-                  onChange={e => setMaxResubmissions(Math.max(1, Number(e.target.value)))}
-                  className="w-20 border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-              </div>
-            )}
+        </div>
+
+        {/* Resubmissions — own card so it's easy to find */}
+        <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
+          <div>
+            <p className="text-sm font-semibold text-gray-800">Resubmissions</p>
+            <p className="text-xs text-gray-400 mt-0.5">Students can always view their submitted work. Enable this to also let them submit again.</p>
           </div>
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" checked={resubmissionsAllowed}
+              onChange={e => setResubmissionsAllowed(e.target.checked)}
+              className="w-4 h-4 accent-indigo-600" />
+            <span className="text-sm text-gray-700">Allow students to resubmit this assignment</span>
+          </label>
+          {resubmissionsAllowed && (
+            <div className="flex items-center gap-3">
+              <label className="text-sm text-gray-600">Max resubmissions allowed:</label>
+              <input type="number" min={1} max={10} value={maxResubmissions}
+                onChange={e => setMaxResubmissions(Math.max(1, Number(e.target.value)))}
+                className="w-20 border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+          )}
         </div>
 
         <div className="space-y-4">

@@ -63,7 +63,7 @@ export default function TeacherAllAssignments() {
             {filtered.map(a => (
               <button
                 key={a.id}
-                onClick={() => navigate(`/teacher/classroom/${a.classroom.id}`)}
+                onClick={() => navigate(`/teacher/classroom/${a.classroom.id}/assignment/${a.id}`)}
                 className="w-full text-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-4 hover:border-indigo-300 hover:shadow-sm transition-all"
               >
                 <div className="flex items-center justify-between">

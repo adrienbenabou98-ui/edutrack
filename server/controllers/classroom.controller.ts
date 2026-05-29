@@ -83,6 +83,21 @@ export async function getClassroom(req: AuthRequest, res: Response) {
   if (user.role === 'STUDENT') {
     const enrolled = classroom.enrollments.some(e => e.studentId === user.id)
     if (!enrolled) { res.status(403).json({ error: 'Forbidden' }); return }
+    // Strip peer student emails — students only see their own email
+    res.json({
+      ...classroom,
+      enrollments: classroom.enrollments.map(e => ({
+        ...e,
+        student: {
+          id: e.student.id,
+          name: e.student.name,
+          username: e.student.username,
+          yearLevel: e.student.yearLevel,
+          teacherCreated: e.student.teacherCreated,
+        },
+      })),
+    })
+    return
   }
 
   res.json(classroom)
