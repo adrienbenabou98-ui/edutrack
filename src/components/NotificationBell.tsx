@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useNotificationsStore } from '../store/notifications.store'
 import { useAuthStore } from '../store/auth.store'
 
@@ -18,6 +19,7 @@ export default function NotificationBell({ accent = 'indigo' }: { accent?: 'indi
   const { notifications, unreadCount, fetchNotifications, markRead, markAllRead, deleteNotification } = useNotificationsStore()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!user) return
@@ -38,7 +40,8 @@ export default function NotificationBell({ accent = 'indigo' }: { accent?: 'indi
 
   async function handleItemClick(id: string, link: string | null, read: boolean) {
     if (!read) await markRead(id)
-    if (link) window.location.href = link
+    setOpen(false)
+    if (link) navigate(link)
   }
 
   return (

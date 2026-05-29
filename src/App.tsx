@@ -17,6 +17,7 @@ import Rubrics from './pages/teacher/Rubrics'
 import TeacherAllAssignments from './pages/teacher/AllAssignments'
 import TeacherRankings from './pages/teacher/TeacherRankings'
 import TeacherTemplates from './pages/teacher/Templates'
+import TeacherAssignmentDetail from './pages/teacher/AssignmentDetail'
 import TeacherLessonPlanner from './pages/teacher/LessonPlanner'
 import TeacherInterventions from './pages/teacher/Interventions'
 import TeacherAnnouncements from './pages/teacher/Announcements'
@@ -62,6 +63,7 @@ export default function App() {
         <Route path="/teacher" element={<ProtectedRoute role="TEACHER"><TeacherDashboard /></ProtectedRoute>} />
         <Route path="/teacher/classroom/:id" element={<ProtectedRoute role="TEACHER"><ClassroomDetail /></ProtectedRoute>} />
         <Route path="/teacher/classroom/:id/new-assignment" element={<ProtectedRoute role="TEACHER"><NewAssignment /></ProtectedRoute>} />
+        <Route path="/teacher/classroom/:classroomId/assignment/:assignmentId" element={<ProtectedRoute role="TEACHER"><TeacherAssignmentDetail /></ProtectedRoute>} />
         <Route path="/teacher/classroom/:id/analytics" element={<ProtectedRoute role="TEACHER"><AnalyticsPage /></ProtectedRoute>} />
         <Route path="/teacher/grades" element={<ProtectedRoute role="TEACHER"><GradeTracker /></ProtectedRoute>} />
         <Route path="/teacher/grades/:studentId" element={<ProtectedRoute role="TEACHER"><StudentGradeDetail /></ProtectedRoute>} />

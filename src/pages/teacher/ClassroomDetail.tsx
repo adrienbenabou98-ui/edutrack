@@ -260,7 +260,9 @@ export default function ClassroomDetail() {
           ) : (
             <div className="space-y-3">
               {classroom.assignments.map(a => (
-                <div key={a.id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-4 flex items-center justify-between">
+                <div key={a.id}
+                  onClick={() => navigate(`/teacher/classroom/${id}/assignment/${a.id}`)}
+                  className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-4 flex items-center justify-between cursor-pointer hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-sm transition-all">
                   <div>
                     <h3 className="font-medium text-gray-900 dark:text-white">{a.title}</h3>
                     <p className="text-sm text-gray-400 mt-0.5">
@@ -271,7 +273,7 @@ export default function ClassroomDetail() {
                   <div className="flex items-center gap-2">
                     {(a as any).plagiarismFlag && (
                       <button
-                        onClick={() => setPlagiarismModal({ report: (a as any).plagiarismReport ?? 'No details', submissionId: a.id })}
+                        onClick={e => { e.stopPropagation(); setPlagiarismModal({ report: (a as any).plagiarismReport ?? 'No details', submissionId: a.id }) }}
                         className="text-xs px-2 py-1 rounded-full font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 hover:bg-red-200"
                       >
                         ⚠ Plagiarism flag
@@ -280,6 +282,9 @@ export default function ClassroomDetail() {
                     <span className={`text-xs px-2 py-1 rounded-full font-medium ${
                       a.status === 'PUBLISHED' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
                     }`}>{a.status}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-gray-400">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                    </svg>
                   </div>
                 </div>
               ))}
