@@ -152,12 +152,6 @@ export async function exportStudentPDF(req: AuthRequest, res: Response) {
     doc.font('Helvetica')
   }
 
-  function gradeLabel(score: number | null): string {
-    if (score === null) return '—'
-    const g = getGrade(score, boundaries as any)
-    return g ? `${score.toFixed(1)}% (${g.label})` : `${score.toFixed(1)}%`
-  }
-
   // ── COVER PAGE ──────────────────────────────────────────────────────
   doc.rect(50, 50, W, 4).fill(indigo)
   doc.moveDown(3)
@@ -213,7 +207,6 @@ export async function exportStudentPDF(req: AuthRequest, res: Response) {
 
       // Table header
       const lessonColW = [280, 180]
-      let x = 50
       const headerY = doc.y
       doc.rect(50, headerY, W, 16).fill('#f3f4f6')
       doc.fontSize(9).fillColor(gray).font('Helvetica-Bold')

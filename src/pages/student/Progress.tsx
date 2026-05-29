@@ -40,27 +40,27 @@ export default function StudentProgress() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white border border-gray-200 rounded-xl p-4">
-          <p className="text-sm text-gray-500">Submissions</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{data.totalSubmissions}</p>
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400">Submissions</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{data.totalSubmissions}</p>
         </div>
-        <div className="bg-white border border-gray-200 rounded-xl p-4">
-          <p className="text-sm text-gray-500">Average score</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400">Average score</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
             {data.scores.length > 0
               ? (data.scores.reduce((a, b) => a + b.score, 0) / data.scores.length).toFixed(0)
               : '—'}%
           </p>
         </div>
         <div className={`border rounded-xl p-4 ${trend.bg}`}>
-          <p className="text-sm text-gray-500">Trend</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Trend</p>
           <p className={`text-2xl font-bold mt-1 ${trend.color}`}>{trend.label}</p>
         </div>
       </div>
 
       {chartData.length > 1 && (
-        <div className="bg-white border border-gray-200 rounded-xl p-5">
-          <h3 className="font-semibold text-gray-900 mb-4">Score history</h3>
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Score history</h3>
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -83,17 +83,17 @@ export default function StudentProgress() {
       )}
 
       {data.weakAreas.length > 0 && (
-        <div className="bg-white border border-gray-200 rounded-xl p-5">
-          <h3 className="font-semibold text-gray-900 mb-3">Focus areas</h3>
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Focus areas</h3>
           <div className="space-y-2">
             {data.weakAreas.map(w => (
               <div key={w.tag} className="flex items-center justify-between">
-                <span className="text-sm text-gray-700 capitalize">{w.tag}</span>
+                <span className="text-sm text-gray-700 dark:text-gray-300 capitalize">{w.tag}</span>
                 <div className="flex items-center gap-3">
-                  <div className="w-32 bg-gray-100 rounded-full h-2">
+                  <div className="w-32 bg-gray-100 dark:bg-gray-700 rounded-full h-2">
                     <div className="bg-orange-400 h-2 rounded-full" style={{ width: `${w.errorRate}%` }} />
                   </div>
-                  <span className="text-xs text-gray-500 w-12 text-right">{w.errorRate}% errors</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 w-12 text-right">{w.errorRate}% errors</span>
                 </div>
               </div>
             ))}

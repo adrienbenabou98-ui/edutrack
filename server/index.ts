@@ -57,8 +57,22 @@ const PORT = process.env.PORT || 4000
 // Trust Railway/Heroku reverse proxy so rate limiters see the real client IP
 app.set('trust proxy', 1)
 
-// Security headers (CSP disabled — React SPA with inline scripts)
-app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }))
+// Security headers — CSP configured for React SPA (bundled scripts from self, Google Fonts)
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+      imgSrc: ["'self'", 'data:', 'https:'],
+      connectSrc: ["'self'", 'https:'],
+      objectSrc: ["'none'"],
+      frameSrc: ["'none'"],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+}))
 
 // CORS — origins from CORS_ORIGIN env var (comma-separated); null origin allows Electron (file://) and server-to-server
 const allowedOrigins = process.env.CORS_ORIGIN
@@ -77,9 +91,9 @@ app.use(cors({
 // Body size limit — prevents payload-based DoS
 app.use(express.json({ limit: '1mb' }))
 
-app.use('/api/auth/login', loginLimiter)
-app.use('/api/auth/register', registerLimiter)
-app.use('/api', apiLimiter)
+app.use(apiLimiter)                          // global — covers all routes including static serving
+app.use('/api/auth/login', loginLimiter)     // stricter limit on login
+app.use('/api/auth/register', registerLimiter) // stricter limit on register
 
 app.get('/health', (_req, res) => {
   res.json({

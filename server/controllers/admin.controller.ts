@@ -1,5 +1,6 @@
 import { Response } from 'express'
 import bcrypt from 'bcryptjs'
+import { randomBytes } from 'crypto'
 import { prisma } from '../prisma/client.js'
 import type { AuthRequest } from '../middleware/auth.js'
 
@@ -7,18 +8,6 @@ async function audit(adminId: string, action: string, target?: string, details?:
   await prisma.auditLog.create({ data: { adminId, action, target, details } }).catch(() => {})
 }
 
-function safeUser(u: any) {
-  return {
-    id: u.id,
-    name: u.name,
-    email: u.email,
-    role: u.role,
-    suspended: u.suspended,
-    lastLoginAt: u.lastLoginAt,
-    createdAt: u.createdAt,
-    _count: u._count,
-  }
-}
 
 export async function listUsers(req: AuthRequest, res: Response) {
   const { search, role, status } = req.query as Record<string, string>
@@ -111,7 +100,8 @@ export async function deleteUser(req: AuthRequest, res: Response) {
 
 export async function resetPassword(req: AuthRequest, res: Response) {
   const { id } = req.params
-  const newPassword = Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6).toUpperCase()
+  const buf = randomBytes(11)
+  const newPassword = String(buf[0] % 10) + buf.slice(1).toString('base64url').slice(0, 11)
   const passwordHash = await bcrypt.hash(newPassword, 12)
   const target = await prisma.user.findUnique({ where: { id }, select: { name: true } })
   await prisma.user.update({ where: { id }, data: { passwordHash } })
