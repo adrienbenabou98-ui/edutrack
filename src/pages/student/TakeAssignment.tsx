@@ -51,49 +51,47 @@ export default function TakeAssignment() {
     }
   }
 
-  if (!assignment) return <div className="min-h-screen flex items-center justify-center text-gray-400">Loading…</div>
+  if (!assignment) return <div className="min-h-screen flex items-center justify-center text-gray-400 dark:bg-gray-900">Loading…</div>
 
   const prior = assignment.submissions?.[0]
   const resubmitsLeft = assignment.maxResubmissions - (prior?.resubmissionCount ?? 0)
   const canResubmit = assignment.resubmissionsAllowed && resubmitsLeft > 0
 
-  // Student has already submitted and is not currently resubmitting — show their
-  // submitted work with options to view it or (if allowed) resubmit.
   if (prior && !resubmitMode && !result) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <nav className="bg-white border-b border-gray-200 px-6 py-4 flex items-center gap-4">
-          <button onClick={() => navigate('/student')} className="text-sm text-gray-500 hover:text-gray-700">← Back</button>
-          <span className="text-lg font-semibold text-gray-900">{assignment.title}</span>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center gap-4">
+          <button onClick={() => navigate('/student')} className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">← Back</button>
+          <span className="text-lg font-semibold text-gray-900 dark:text-white">{assignment.title}</span>
         </nav>
         <main className="max-w-2xl mx-auto px-6 py-8">
-          <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center">
-            <p className="text-gray-600 mb-2">You have already submitted this assignment.</p>
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-8 text-center">
+            <p className="text-gray-600 dark:text-gray-300 mb-2">You have already submitted this assignment.</p>
             {prior.totalScore !== null && (
               <div className={`text-5xl font-bold my-3 ${prior.totalScore >= 70 ? 'text-teal-600' : 'text-orange-500'}`}>
                 {prior.totalScore.toFixed(0)}%
               </div>
             )}
             {assignment.resubmissionsAllowed && (
-              <p className="text-sm text-gray-400 mb-6">
+              <p className="text-sm text-gray-400 dark:text-gray-500 mb-6">
                 Resubmissions used: {prior.resubmissionCount} of {assignment.maxResubmissions}
               </p>
             )}
             <div className="flex flex-col gap-3 max-w-xs mx-auto">
-              <button onClick={() => navigate(`/student/submission/${prior.id}`)}
-                className="btn-3d-teal px-6">
+              <button onClick={() => navigate(`/student/submission/${prior.id}`)} className="btn-3d-teal px-6">
                 View my submission
               </button>
               {canResubmit ? (
                 <button onClick={() => { setResubmitMode(true); setAnswers({}); setError(null) }}
-                  className="px-6 py-2 border border-teal-300 text-teal-700 rounded-lg text-sm font-medium hover:bg-teal-50">
+                  className="px-6 py-2 border border-teal-300 dark:border-teal-700 text-teal-700 dark:text-teal-400 rounded-lg text-sm font-medium hover:bg-teal-50 dark:hover:bg-teal-900/20">
                   Resubmit ({resubmitsLeft} left)
                 </button>
               ) : assignment.resubmissionsAllowed ? (
-                <p className="text-xs text-gray-400">No resubmissions remaining.</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">No resubmissions remaining.</p>
               ) : null}
-              <button onClick={() => navigate('/student')}
-                className="text-sm text-gray-500 hover:text-gray-700">Back to Dashboard</button>
+              <button onClick={() => navigate('/student')} className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+                Back to Dashboard
+              </button>
             </div>
           </div>
         </main>
@@ -103,17 +101,16 @@ export default function TakeAssignment() {
 
   if (result) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white border border-gray-200 rounded-2xl p-8 max-w-md w-full text-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-8 max-w-md w-full text-center">
           <div className={`text-5xl font-bold mb-2 ${result.totalScore >= 70 ? 'text-teal-600' : 'text-orange-500'}`}>
             {result.totalScore.toFixed(0)}%
           </div>
-          <p className="text-gray-600 mb-2">Assignment submitted!</p>
-          <p className="text-gray-400 text-sm mb-6">
-            {result.totalScore >= 90 ? 'Excellent work!' : result.totalScore >= 70 ? 'Good job!' : 'Keep practising — you\'ll get there!'}
+          <p className="text-gray-600 dark:text-gray-300 mb-2">Assignment submitted!</p>
+          <p className="text-gray-400 dark:text-gray-500 text-sm mb-6">
+            {result.totalScore >= 90 ? 'Excellent work!' : result.totalScore >= 70 ? 'Good job!' : "Keep practising — you'll get there!"}
           </p>
-          <button onClick={() => navigate('/student')}
-            className="btn-3d-teal px-6">
+          <button onClick={() => navigate('/student')} className="btn-3d-teal px-6">
             Back to Dashboard
           </button>
         </div>
@@ -122,29 +119,29 @@ export default function TakeAssignment() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white border-b border-gray-200 px-6 py-4 flex items-center gap-4">
-        <button onClick={() => navigate('/student')} className="text-sm text-gray-500 hover:text-gray-700">← Back</button>
-        <span className="text-lg font-semibold text-gray-900">{assignment.title}</span>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center gap-4">
+        <button onClick={() => navigate('/student')} className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">← Back</button>
+        <span className="text-lg font-semibold text-gray-900 dark:text-white">{assignment.title}</span>
       </nav>
       <form onSubmit={handleSubmit}>
         <main className="max-w-2xl mx-auto px-6 py-8 space-y-6">
           {assignment.instructions && (
-            <div className="bg-teal-50 border border-teal-200 rounded-xl p-4 text-sm text-teal-800">
+            <div className="bg-teal-50 dark:bg-teal-900/20 border border-teal-200 dark:border-teal-800 rounded-xl p-4 text-sm text-teal-800 dark:text-teal-300">
               {assignment.instructions}
             </div>
           )}
           {assignment.questions.map((q, i) => (
-            <div key={q.id} className="bg-white border border-gray-200 rounded-xl p-5">
-              <p className="font-medium text-gray-900 mb-4">
-                <span className="text-gray-400 text-sm mr-2">Q{i + 1}</span>{q.text}
+            <div key={q.id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
+              <p className="font-medium text-gray-900 dark:text-white mb-4">
+                <span className="text-gray-400 dark:text-gray-500 text-sm mr-2">Q{i + 1}</span>{q.text}
               </p>
               {q.type === 'MULTIPLE_CHOICE' && q.options && (
                 <div className="space-y-2">
                   {q.options.map(o => (
-                    <label key={o} className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 has-[:checked]:border-teal-400 has-[:checked]:bg-teal-50">
+                    <label key={o} className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 has-[:checked]:border-teal-400 has-[:checked]:bg-teal-50 dark:has-[:checked]:bg-teal-900/20 dark:has-[:checked]:border-teal-600">
                       <input type="radio" name={q.id} value={o} onChange={() => setAnswer(q.id, o)} required />
-                      <span className="text-sm text-gray-800">{o}</span>
+                      <span className="text-sm text-gray-800 dark:text-gray-200">{o}</span>
                     </label>
                   ))}
                 </div>
@@ -152,32 +149,31 @@ export default function TakeAssignment() {
               {q.type === 'TRUE_FALSE' && (
                 <div className="flex gap-4">
                   {['True', 'False'].map(v => (
-                    <label key={v} className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 has-[:checked]:border-teal-400 has-[:checked]:bg-teal-50">
+                    <label key={v} className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 has-[:checked]:border-teal-400 has-[:checked]:bg-teal-50 dark:has-[:checked]:bg-teal-900/20 dark:has-[:checked]:border-teal-600">
                       <input type="radio" name={q.id} value={v} onChange={() => setAnswer(q.id, v)} required />
-                      <span className="text-sm font-medium">{v}</span>
+                      <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{v}</span>
                     </label>
                   ))}
                 </div>
               )}
-              {(q.type === 'SHORT_ANSWER') && (
+              {q.type === 'SHORT_ANSWER' && (
                 <input value={answers[q.id] ?? ''} onChange={e => setAnswer(q.id, e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
                   placeholder="Your answer…" required />
               )}
               {q.type === 'LONG_ANSWER' && (
                 <textarea value={answers[q.id] ?? ''} onChange={e => setAnswer(q.id, e.target.value)} rows={4}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
                   placeholder="Your answer…" required />
               )}
-              <p className="text-xs text-gray-400 mt-3 text-right">{q.points} pts</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-3 text-right">{q.points} pts</p>
             </div>
           ))}
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-800">{error}</div>
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 text-sm text-red-800 dark:text-red-300">{error}</div>
           )}
           <div className="flex justify-end pb-8">
-            <button type="submit" disabled={submitting}
-              className="btn-3d-teal px-6 py-2.5 disabled:opacity-50">
+            <button type="submit" disabled={submitting} className="btn-3d-teal px-6 py-2.5 disabled:opacity-50">
               {submitting ? 'Submitting…' : resubmitMode ? 'Resubmit Assignment' : 'Submit Assignment'}
             </button>
           </div>

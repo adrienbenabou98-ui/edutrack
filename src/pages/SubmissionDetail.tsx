@@ -81,23 +81,23 @@ export default function SubmissionDetail({ role }: { role: 'STUDENT' | 'TEACHER'
   const hasManualQuestions = submission.answers.some(a => a.isCorrect === null)
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white border-b border-gray-200 px-6 py-4 flex items-center gap-4">
-        <button onClick={() => navigate(backTo)} className="text-sm text-gray-500 hover:text-gray-700">← Back</button>
-        <span className="text-lg font-semibold text-gray-900">{submission.assignment.title}</span>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center gap-4">
+        <button onClick={() => navigate(backTo)} className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">← Back</button>
+        <span className="text-lg font-semibold text-gray-900 dark:text-white">{submission.assignment.title}</span>
         {role === 'TEACHER' && hasManualQuestions && submission.status !== 'GRADED' && (
-          <span className="ml-auto text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-medium">Needs grading</span>
+          <span className="ml-auto text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-2 py-1 rounded-full font-medium">Needs grading</span>
         )}
       </nav>
 
       <main className="max-w-2xl mx-auto px-6 py-8 space-y-6">
         {/* Header card */}
-        <div className="bg-white border border-gray-200 rounded-xl p-5 flex items-center justify-between">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 flex items-center justify-between">
           <div>
             {role === 'TEACHER' && submission.student && (
-              <p className="font-medium text-gray-900">{submission.student.name}</p>
+              <p className="font-medium text-gray-900 dark:text-white">{submission.student.name}</p>
             )}
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-400 dark:text-gray-500">
               Submitted {new Date(submission.submittedAt).toLocaleString()}
               {submission.resubmissionCount > 0 && ` · resubmission #${submission.resubmissionCount}`}
             </p>
@@ -128,11 +128,11 @@ export default function SubmissionDetail({ role }: { role: 'STUDENT' | 'TEACHER'
         {/* Answers */}
         <div className="space-y-4">
           {submission.answers.map((a, i) => (
-            <div key={a.id} className="bg-white border border-gray-200 rounded-xl p-5">
-              <p className="font-medium text-gray-900 mb-2">
-                <span className="text-gray-400 text-sm mr-2">Q{i + 1}</span>{a.question.text}
+            <div key={a.id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
+              <p className="font-medium text-gray-900 dark:text-white mb-2">
+                <span className="text-gray-400 dark:text-gray-500 text-sm mr-2">Q{i + 1}</span>{a.question.text}
               </p>
-              <div className="bg-gray-50 border border-gray-100 rounded-lg p-3 text-sm text-gray-800">
+              <div className="bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 rounded-lg p-3 text-sm text-gray-800 dark:text-gray-200">
                 {a.responseText || <span className="text-gray-400 italic">No answer</span>}
               </div>
               <div className="flex items-center justify-between mt-3 text-xs">
@@ -141,7 +141,7 @@ export default function SubmissionDetail({ role }: { role: 'STUDENT' | 'TEACHER'
                     {a.isCorrect ? '✓ Correct' : '✗ Incorrect'}
                   </span>
                 ) : (
-                  <span className="text-gray-400 italic">{role === 'TEACHER' ? 'Set points →' : 'Manually graded'}</span>
+                  <span className="text-gray-400 dark:text-gray-500 italic">{role === 'TEACHER' ? 'Set points →' : 'Manually graded'}</span>
                 )}
                 <div className="flex items-center gap-2">
                   {role === 'TEACHER' && a.isCorrect === null ? (
@@ -157,13 +157,13 @@ export default function SubmissionDetail({ role }: { role: 'STUDENT' | 'TEACHER'
                       className="w-16 border border-gray-300 rounded px-2 py-0.5 text-xs text-center focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                   ) : (
-                    <span className="text-gray-400">{a.pointsAwarded ?? 0}</span>
+                    <span className="text-gray-400 dark:text-gray-500">{a.pointsAwarded ?? 0}</span>
                   )}
-                  <span className="text-gray-400">/ {a.question.points} pts</span>
+                  <span className="text-gray-400 dark:text-gray-500">/ {a.question.points} pts</span>
                 </div>
               </div>
               {role === 'TEACHER' && !a.isCorrect && a.question.correctAnswer && (
-                <p className="text-xs text-gray-400 mt-2">Expected: {a.question.correctAnswer}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">Expected: {a.question.correctAnswer}</p>
               )}
             </div>
           ))}
@@ -171,10 +171,10 @@ export default function SubmissionDetail({ role }: { role: 'STUDENT' | 'TEACHER'
 
         {/* Teacher grading panel */}
         {role === 'TEACHER' && (
-          <div className="bg-white border border-gray-200 rounded-xl p-5 space-y-4">
-            <h3 className="text-sm font-semibold text-gray-800">Grading</h3>
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 space-y-4">
+            <h3 className="text-sm font-semibold text-gray-800 dark:text-white">Grading</h3>
             <div>
-              <label className="block text-sm text-gray-600 mb-1">
+              <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">
                 Note for student <span className="text-gray-400 font-normal">(optional — shown on their submission view)</span>
               </label>
               <textarea
@@ -182,7 +182,7 @@ export default function SubmissionDetail({ role }: { role: 'STUDENT' | 'TEACHER'
                 onChange={e => setTeacherNote(e.target.value)}
                 rows={3}
                 placeholder="Add feedback or a comment…"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
             <div className="flex items-center justify-between">

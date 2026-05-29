@@ -76,61 +76,55 @@ export default function NewAssignment() {
     }
   }
 
+  const inputCls = 'w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500'
+  const labelCls = 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white border-b border-gray-200 px-6 py-4 flex items-center gap-4">
-        <button onClick={() => navigate(-1)} className="text-sm text-gray-500 hover:text-gray-700">← Back</button>
-        <span className="text-lg font-semibold text-gray-900">New Assignment</span>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center gap-4">
+        <button onClick={() => navigate(-1)} className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">← Back</button>
+        <span className="text-lg font-semibold text-gray-900 dark:text-white">New Assignment</span>
       </nav>
       <main className="max-w-3xl mx-auto px-6 py-8 space-y-6">
-        <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
+
+        {/* Details card */}
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-            <input value={title} onChange={e => setTitle(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Assignment title" required />
+            <label className={labelCls}>Title</label>
+            <input value={title} onChange={e => setTitle(e.target.value)} className={inputCls} placeholder="Assignment title" required />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Instructions</label>
-            <textarea value={instructions} onChange={e => setInstructions(e.target.value)} rows={3}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Instructions for students…" />
+            <label className={labelCls}>Instructions</label>
+            <textarea value={instructions} onChange={e => setInstructions(e.target.value)} rows={3} className={inputCls} placeholder="Instructions for students…" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Subject <span className="text-gray-400 font-normal">(optional)</span></label>
-              <input value={subject} onChange={e => setSubject(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="e.g. Biology" />
+              <label className={labelCls}>Subject <span className="text-gray-400 font-normal">(optional)</span></label>
+              <input value={subject} onChange={e => setSubject(e.target.value)} className={inputCls} placeholder="e.g. Biology" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Unit <span className="text-gray-400 font-normal">(optional)</span></label>
-              <input value={unitName} onChange={e => setUnitName(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="e.g. Cell Biology" />
+              <label className={labelCls}>Unit <span className="text-gray-400 font-normal">(optional)</span></label>
+              <input value={unitName} onChange={e => setUnitName(e.target.value)} className={inputCls} placeholder="e.g. Cell Biology" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-              <select value={type} onChange={e => setType(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <label className={labelCls}>Type</label>
+              <select value={type} onChange={e => setType(e.target.value)} className={inputCls}>
                 <option value="ASSIGNMENT">Assignment</option>
                 <option value="QUIZ">Quiz</option>
                 <option value="EXAM">Exam</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Due date</label>
-              <input type="datetime-local" value={dueDate} onChange={e => setDueDate(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              <label className={labelCls}>Due date</label>
+              <input type="datetime-local" value={dueDate} onChange={e => setDueDate(e.target.value)} className={inputCls} />
             </div>
           </div>
           {rubrics.length > 0 && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Rubric <span className="font-normal text-gray-400">(optional)</span></label>
-              <select value={rubricId} onChange={e => setRubricId(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <label className={labelCls}>Rubric <span className="font-normal text-gray-400">(optional)</span></label>
+              <select value={rubricId} onChange={e => setRubricId(e.target.value)} className={inputCls}>
                 <option value="">No rubric</option>
                 {rubrics.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
               </select>
@@ -138,43 +132,44 @@ export default function NewAssignment() {
           )}
         </div>
 
-        {/* Resubmissions — own card so it's easy to find */}
-        <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
+        {/* Resubmissions card */}
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 space-y-4">
           <div>
-            <p className="text-sm font-semibold text-gray-800">Resubmissions</p>
-            <p className="text-xs text-gray-400 mt-0.5">Students can always view their submitted work. Enable this to also let them submit again.</p>
+            <p className="text-sm font-semibold text-gray-800 dark:text-white">Resubmissions</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Students can always view their submitted work. Enable this to also let them submit again.</p>
           </div>
           <label className="flex items-center gap-3 cursor-pointer">
             <input type="checkbox" checked={resubmissionsAllowed}
               onChange={e => setResubmissionsAllowed(e.target.checked)}
               className="w-4 h-4 accent-indigo-600" />
-            <span className="text-sm text-gray-700">Allow students to resubmit this assignment</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300">Allow students to resubmit this assignment</span>
           </label>
           {resubmissionsAllowed && (
             <div className="flex items-center gap-3">
-              <label className="text-sm text-gray-600">Max resubmissions allowed:</label>
+              <label className="text-sm text-gray-600 dark:text-gray-400">Max resubmissions allowed:</label>
               <input type="number" min={1} max={10} value={maxResubmissions}
                 onChange={e => setMaxResubmissions(Math.max(1, Number(e.target.value)))}
-                className="w-20 border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                className="w-20 border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             </div>
           )}
         </div>
 
+        {/* Questions */}
         <div className="space-y-4">
-          <h2 className="font-semibold text-gray-900">Questions</h2>
+          <h2 className="font-semibold text-gray-900 dark:text-white">Questions</h2>
           {questions.map((q, i) => (
-            <div key={i} className="bg-white border border-gray-200 rounded-xl p-5 space-y-4">
+            <div key={i} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 space-y-4">
               <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-gray-500">Q{i + 1}</span>
+                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Q{i + 1}</span>
                 <select value={q.type} onChange={e => updateQuestion(i, 'type', e.target.value)}
-                  className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  className="border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                   <option value="MULTIPLE_CHOICE">Multiple Choice</option>
                   <option value="TRUE_FALSE">True / False</option>
                   <option value="SHORT_ANSWER">Short Answer</option>
                   <option value="LONG_ANSWER">Long Answer</option>
                 </select>
                 <input type="number" value={q.points} onChange={e => updateQuestion(i, 'points', Number(e.target.value))}
-                  className="w-20 border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-20 border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder="pts" min={1} />
                 {questions.length > 1 && (
                   <button onClick={() => setQuestions(qs => qs.filter((_, j) => j !== i))}
@@ -182,25 +177,24 @@ export default function NewAssignment() {
                 )}
               </div>
               <textarea value={q.text} onChange={e => updateQuestion(i, 'text', e.target.value)} rows={2}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Question text…" />
+                className={inputCls} placeholder="Question text…" />
               {q.type === 'MULTIPLE_CHOICE' && (
                 <div className="space-y-2">
                   {q.options.map((o, j) => (
                     <div key={j} className="flex items-center gap-2">
                       <input type="radio" name={`correct-${i}`} checked={q.correctAnswer === o} onChange={() => updateQuestion(i, 'correctAnswer', o)} />
                       <input value={o} onChange={e => updateOption(i, j, e.target.value)}
-                        className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         placeholder={`Option ${j + 1}`} />
                     </div>
                   ))}
-                  <p className="text-xs text-gray-400">Select the radio button next to the correct answer</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">Select the radio button next to the correct answer</p>
                 </div>
               )}
               {q.type === 'TRUE_FALSE' && (
                 <div className="flex gap-4">
                   {['True', 'False'].map(v => (
-                    <label key={v} className="flex items-center gap-2 text-sm cursor-pointer">
+                    <label key={v} className="flex items-center gap-2 text-sm cursor-pointer text-gray-700 dark:text-gray-300">
                       <input type="radio" name={`tf-${i}`} checked={q.correctAnswer === v} onChange={() => updateQuestion(i, 'correctAnswer', v)} />
                       {v}
                     </label>
@@ -208,19 +202,19 @@ export default function NewAssignment() {
                 </div>
               )}
               <input value={q.tags} onChange={e => updateQuestion(i, 'tags', e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 placeholder="Tags (comma separated): fractions, algebra…" />
             </div>
           ))}
           <button onClick={() => setQuestions(qs => [...qs, emptyQuestion()])}
-            className="w-full border-2 border-dashed border-gray-300 rounded-xl py-3 text-sm text-gray-500 hover:border-indigo-400 hover:text-indigo-600 transition-colors">
+            className="w-full border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl py-3 text-sm text-gray-500 dark:text-gray-400 hover:border-indigo-400 hover:text-indigo-600 dark:hover:border-indigo-500 dark:hover:text-indigo-400 transition-colors">
             + Add question
           </button>
         </div>
 
         <div className="flex gap-3 justify-end pb-8">
           <button onClick={() => handleSubmit('DRAFT')} disabled={saving}
-            className="px-5 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50">
+            className="px-5 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50">
             Save as Draft
           </button>
           <button onClick={() => handleSubmit('PUBLISHED')} disabled={saving || !title}
