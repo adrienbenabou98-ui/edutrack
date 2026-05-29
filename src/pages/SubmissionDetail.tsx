@@ -132,7 +132,7 @@ export default function SubmissionDetail({ role }: { role: 'STUDENT' | 'TEACHER'
               <p className="font-medium text-gray-900 dark:text-white mb-2">
                 <span className="text-gray-400 dark:text-gray-500 text-sm mr-2">Q{i + 1}</span>{a.question.text}
               </p>
-              <div className="bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 rounded-lg p-3 text-sm text-gray-800 dark:text-gray-200">
+              <div className="bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 rounded-lg p-3 text-sm text-gray-800 dark:text-gray-200 break-all">
                 {a.responseText || <span className="text-gray-400 italic">No answer</span>}
               </div>
               <div className="flex items-center justify-between mt-3 text-xs">
