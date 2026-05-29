@@ -14,7 +14,7 @@ Visit **https://edutrack-production-2a6d.up.railway.app** in any browser.
 On Chromebook, install it as an app: open the URL in Chrome, then click the install icon in the address bar (or Chrome menu → Install EduTrack). It will appear in your launcher like a native app.
 
 ### Windows Desktop
-**[EduTrack v1.7.0 — Windows Installer](https://github.com/adrienbenabou98-ui/edutrack/releases/tag/v1.7.0)**
+**[EduTrack v1.7.0 — Windows Installer](https://github.com/Sir-Adrien-Claudington/edutrack/releases/tag/v1.7.0)**
 
 | File | Description |
 |---|---|
@@ -86,7 +86,7 @@ All versions connect to the same live server. Create an account on first use or 
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/adrienbenabou98-ui/edutrack.git
+git clone https://github.com/Sir-Adrien-Claudington/edutrack.git
 cd edutrack
 npm install
 ```

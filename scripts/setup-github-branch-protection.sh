@@ -11,7 +11,7 @@
 
 set -e
 
-REPO="adrienbenabou98-ui/edutrack"
+REPO="Sir-Adrien-Claudington/edutrack"
 BRANCH="master"
 
 echo "Applying branch protection rules to $REPO ($BRANCH)..."
