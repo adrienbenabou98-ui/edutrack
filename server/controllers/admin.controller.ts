@@ -100,8 +100,9 @@ export async function deleteUser(req: AuthRequest, res: Response) {
 
 export async function resetPassword(req: AuthRequest, res: Response) {
   const { id } = req.params
-  const buf = randomBytes(11)
-  const newPassword = String(buf[0] % 10) + buf.slice(1).toString('base64url').slice(0, 11)
+  // hex encoding is nibble-based (no modulo bias); always yields digits + mixed case
+  const hex = randomBytes(8).toString('hex')
+  const newPassword = hex.slice(0, 8) + hex.slice(8).toUpperCase()
   const passwordHash = await bcrypt.hash(newPassword, 12)
   const target = await prisma.user.findUnique({ where: { id }, select: { name: true } })
   await prisma.user.update({ where: { id }, data: { passwordHash } })
